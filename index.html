@@ -111,8 +111,46 @@
   .planning-info-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--grey); margin-bottom: 3px; }
   .planning-info-row span { color: var(--white); font-weight: 600; }
 
-  /* ADD FORM */
-  .add-row-form { background: var(--navy2); border: 1px dashed var(--grey2); border-radius: 10px; padding: 14px; margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+  /* ADD FORM — flottant en bas */
+  .add-row-form {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--navy2); border-top: 2px solid var(--gold);
+    padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap;
+    align-items: flex-end; z-index: 200;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+  }
+  .add-row-form.hidden { display: none; }
+  /* Padding bottom pour la page étudiants pour ne pas cacher la dernière ligne */
+  #page-etudiants { padding-bottom: 90px; }
+
+  /* Bouton flottant recherche */
+  #float-search-btn {
+    position: fixed; bottom: 74px; right: 20px;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--navy3); border: 1px solid var(--gold);
+    color: var(--gold); font-size: 18px; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    z-index: 201; box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    transition: background 0.2s;
+  }
+  #float-search-btn:hover { background: var(--navy2); }
+  #float-search-btn.visible { display: flex; }
+
+  /* Mini modal recherche rapide */
+  #quick-search-modal {
+    position: fixed; bottom: 122px; right: 16px;
+    background: var(--navy2); border: 1px solid var(--gold);
+    border-radius: 10px; padding: 10px 12px;
+    display: none; gap: 8px; align-items: center;
+    z-index: 202; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  #quick-search-modal.open { display: flex; }
+  #quick-search-input {
+    background: var(--navy3); border: 1px solid var(--grey2);
+    color: var(--white); padding: 6px 10px; border-radius: 6px;
+    font-size: 13px; width: 200px; outline: none;
+  }
+  #quick-search-input:focus { border-color: var(--gold); }
   .form-field { display: flex; flex-direction: column; gap: 3px; }
   .form-field label { font-size: 10px; color: var(--grey); text-transform: uppercase; letter-spacing: 0.05em; }
   .form-field input, .form-field select { background: var(--navy3); border: 1px solid var(--grey2); color: var(--white); padding: 6px 9px; border-radius: 6px; font-size: 12px; min-width: 110px; }
@@ -283,36 +321,6 @@
       <tbody id="etud-tbody"></tbody>
     </table>
   </div>
-
-  <div class="add-row-form">
-    <div class="form-field"><label>Nom</label><input id="ne-nom" placeholder="NOM Prénom"></div>
-    <div class="form-field"><label>Dept</label>
-      <select id="ne-dept">
-        <option>2IA</option><option>MAT</option><option>MECA</option><option>SE</option>
-        <option>SE2A</option><option>GC</option><option>GC2A</option><option>GBA</option>
-        <option>PROD2A</option><option>IS</option><option>IS2A</option><option>2GU2A</option>
-        <option>M1GC</option><option>M1GM</option><option>M2</option>
-      </select>
-    </div>
-    <div class="form-field"><label>Année</label>
-      <select id="ne-annee"><option>3A</option><option>4A</option><option>5A</option></select>
-    </div>
-    <div class="form-field"><label>EC Langue</label><input id="ne-eclangue" placeholder="ANGLAIS"></div>
-    <div class="form-field"><label>Barre TOEIC</label>
-      <select id="ne-toeic"><option value="0">Non — EC TOEIC</option><option value="1">Oui — Validée</option></select>
-    </div>
-    <div class="form-field"><label>Avis</label>
-      <select id="ne-avis">
-        <option value=""></option>
-        <option>Redoublement</option><option>Réorientation</option>
-        <option>Epreuve complémentaire</option><option>Abandon</option>
-        <option>Décision Reportée</option><option>Année blanche</option>
-        <option>S6 blanc</option><option>S8 blanc</option>
-      </select>
-    </div>
-    <div class="form-field"><label>Commentaire</label><input id="ne-comment" placeholder="Optionnel"></div>
-    <button class="btn-add" onclick="addEtudiant()">+ Ajouter</button>
-  </div>
 </div>
 
 <!-- ══════ STATS ══════ -->
@@ -395,6 +403,46 @@
   </div>
 </div>
 
+<!-- ══════ FORMULAIRE AJOUT FLOTTANT (étudiants) ══════ -->
+<div class="add-row-form hidden" id="float-add-form">
+  <div class="form-field"><label>Nom</label><input id="ne-nom" placeholder="NOM Prénom"></div>
+  <div class="form-field"><label>Dept</label>
+    <select id="ne-dept">
+      <option>2IA</option><option>MAT</option><option>MECA</option><option>SE</option>
+      <option>SE2A</option><option>GC</option><option>GC2A</option><option>GBA</option>
+      <option>PROD2A</option><option>IS</option><option>IS2A</option><option>2GU2A</option>
+      <option>M1GC</option><option>M1GM</option><option>M2</option>
+    </select>
+  </div>
+  <div class="form-field"><label>Année</label>
+    <select id="ne-annee"><option>3A</option><option>4A</option><option>5A</option></select>
+  </div>
+  <div class="form-field"><label>EC Langue</label><input id="ne-eclangue" placeholder="ANGLAIS"></div>
+  <div class="form-field"><label>Barre TOEIC</label>
+    <select id="ne-toeic"><option value="0">Non — EC TOEIC</option><option value="1">Oui — Validée</option></select>
+  </div>
+  <div class="form-field"><label>Avis</label>
+    <select id="ne-avis">
+      <option value=""></option>
+      <option>Redoublement</option><option>Réorientation</option>
+      <option>Epreuve complémentaire</option><option>Abandon</option>
+      <option>Décision Reportée</option><option>Année blanche</option>
+      <option>S6 blanc</option><option>S8 blanc</option>
+    </select>
+  </div>
+  <div class="form-field"><label>Commentaire</label><input id="ne-comment" placeholder="Optionnel"></div>
+  <button class="btn-add" onclick="addEtudiant()">+ Ajouter</button>
+</div>
+
+<!-- Bouton loupe flottant -->
+<button id="float-search-btn" title="Recherche rapide" onclick="toggleQuickSearch()">🔍</button>
+
+<!-- Mini modal recherche rapide -->
+<div id="quick-search-modal">
+  <input id="quick-search-input" placeholder="Rechercher…" oninput="syncQuickSearch(this.value)" onkeydown="if(event.key==='Escape')closeQuickSearch()">
+  <button onclick="closeQuickSearch()" style="background:none;border:none;color:var(--grey);cursor:pointer;font-size:16px;padding:2px 4px">✕</button>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -474,7 +522,33 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabs[i]===name));
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
+  // Formulaire flottant et bouton loupe : visibles uniquement sur l'onglet étudiants
+  const isEtud = name === 'etudiants';
+  document.getElementById('float-add-form').classList.toggle('hidden', !isEtud);
+  document.getElementById('float-search-btn').classList.toggle('visible', isEtud);
+  if (!isEtud) closeQuickSearch();
   if (name === 'stats') renderStats();
+}
+
+function toggleQuickSearch() {
+  const modal = document.getElementById('quick-search-modal');
+  const isOpen = modal.classList.contains('open');
+  if (isOpen) { closeQuickSearch(); }
+  else {
+    modal.classList.add('open');
+    const inp = document.getElementById('quick-search-input');
+    inp.value = document.getElementById('search').value;
+    inp.focus();
+  }
+}
+
+function closeQuickSearch() {
+  document.getElementById('quick-search-modal').classList.remove('open');
+}
+
+function syncQuickSearch(val) {
+  document.getElementById('search').value = val;
+  renderTable();
 }
 
 // ─── PLANNING ────────────────────────────────────────────
@@ -766,18 +840,6 @@ function renderStats() {
     head.appendChild(deptSpan);
     head.appendChild(planSpan);
     card.appendChild(head);
-
-    // TOEIC bar
-    const toeicBar = document.createElement('div');
-    toeicBar.style.cssText = 'padding:8px 16px 10px;border-bottom:1px solid var(--navy3);display:flex;align-items:center;gap:10px';
-    const barColor = pct>=80 ? 'var(--green)' : pct>=50 ? 'var(--orange)' : 'var(--red)';
-    toeicBar.innerHTML =
-      '<span style="font-size:11px;color:var(--grey);white-space:nowrap">Barre TOEIC</span>' +
-      '<div style="flex:1;height:6px;background:var(--navy3);border-radius:3px;overflow:hidden">' +
-        '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:3px;transition:width .4s"></div>' +
-      '</div>' +
-      '<span style="font-size:12px;font-weight:700;color:' + barColor + ';white-space:nowrap">' + dt + '/' + dn + ' (' + pct + '%)</span>';
-    card.appendChild(toeicBar);
 
     // Tableau types × années
     if (types.length) {
