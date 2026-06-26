@@ -918,7 +918,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "BOUHELIER Yann",
       "dept": "Meca",
       "annee": "3A",
