@@ -643,7 +643,7 @@ function renderTable() {
     const avisOpts = AVIS_LIST.map(a => `<option value="${a}"${e.avis===a?' selected':''}>${a||'—'}</option>`).join('');
     return `<tr style="${e.traite?'opacity:0.45':''}">
       <td><input type="checkbox" class="traite-check" ${e.traite?'checked':''} onchange="data.etudiants[${i}].traite=this.checked;markDirty(true);renderTable()"></td>
-      <td style="font-weight:600;white-space:nowrap">${esc(e.nom)}</td>
+      <td style="font-weight:600;white-space:nowrap"><input class="editable" value="${esc(e.nom)}" style="min-width:150px;font-weight:600" onchange="data.etudiants[${i}].nom=formatNom(this.value);this.value=data.etudiants[${i}].nom;markDirty()"></td>
       <td><span style="color:var(--gold);font-weight:700">${esc(e.dept)}</span></td>
       <td>${esc(e.annee)}</td>
       <td style="font-size:11px;color:var(--grey)">${esc(e.ec_langue||'')}</td>
@@ -662,7 +662,7 @@ function renderTable() {
 }
 
 function addEtudiant() {
-  const e = { traite:false, nom:v('ne-nom'), dept:v('ne-dept'), annee:v('ne-annee'),
+  const e = { traite:false, nom:formatNom(v('ne-nom')), dept:v('ne-dept'), annee:v('ne-annee'),
     ec_langue:v('ne-eclangue'), ec_langue_val:0, ec_toeic:parseInt(v('ne-toeic')),
     avis:v('ne-avis'), redoublement:'', commentaire:v('ne-comment') };
   if (!e.nom) return;
@@ -1159,7 +1159,7 @@ function confirmImport() {
       const col = Object.keys(importColRoles).find(c=>importColRoles[c]===key);
       return col ? String(row[col]||'').trim() : '';
     };
-    const nom = (get('nom') + ' ' + get('prenom')).trim();
+    const nom = formatNom((get('nom') + ' ' + get('prenom')).trim());
     if (!nom) return;
     const toeicRaw = get('toeic').toLowerCase();
     const ec_toeic = ['1','oui','yes','true','valide','ok'].includes(toeicRaw) ? 1 : 0;
@@ -1286,6 +1286,17 @@ function exportPlanningPDF() {
   toast('PDF telecharge !');
 }
 
+function formatNom(raw) {
+  const s = raw.trim();
+  if (!s) return s;
+  const words = s.split(/\s+/);
+  if (words.length === 1) return words[0].toUpperCase();
+  const nom = words[0].toUpperCase();
+  const prenom = words.slice(1).map(w =>
+    w.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('-')
+  ).join(' ');
+  return nom + ' ' + prenom;
+}
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function v(id) { return document.getElementById(id).value.trim(); }
 function toast(msg, err=false) {
