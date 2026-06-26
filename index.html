@@ -318,21 +318,7 @@
 <!-- ══════ STATS ══════ -->
 <div class="page" id="page-stats">
   <div class="stats-bar" id="global-stats"></div>
-
-  <div class="section-title">Exports</div>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px">
-    <button class="btn btn-gold" onclick="exportEC('toeic')">
-      📤 EC TOEIC
-    </button>
-    <button class="btn" style="background:rgba(74,144,217,0.25);color:#88b8f0;border:1px solid rgba(74,144,217,0.4)" onclick="exportEC('lv1')">
-      📤 EC Langue LV1
-    </button>
-    <button class="btn" style="background:rgba(155,89,182,0.25);color:#c39bd3;border:1px solid rgba(155,89,182,0.4)" onclick="exportEC('lv2')">
-      📤 EC Langue LV2
-    </button>
-  </div>
-
-  <div class="section-title">Par département</div>
+  <div id="export-bar" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px"></div>
   <div id="dept-breakdown"></div>
 </div>
 
@@ -670,96 +656,222 @@ function renderStats() {
   const n  = data.etudiants.length;
   const t  = data.etudiants.filter(e=>e.ec_toeic).length;
   const r  = data.etudiants.filter(e=>e.avis==='Redoublement').length;
-  const o  = data.etudiants.filter(e=>e.avis==='Réorientation').length;
-  const ec = data.etudiants.filter(e=>e.avis==='Epreuve complémentaire').length;
+  const o  = data.etudiants.filter(e=>e.avis==='\u0052\u00e9orientation').length;
+  const ec = data.etudiants.filter(e=>e.avis==='Epreuve compl\u00e9mentaire').length;
   const ab = data.etudiants.filter(e=>e.avis==='Abandon').length;
 
-  document.getElementById('global-stats').innerHTML = `
-    <div class="stat-card"><div class="val">${n}</div><div class="lbl">Total</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--green)">${t}<span style="font-size:11px;color:var(--grey)"> (${n?Math.round(t/n*100):0}%)</span></div><div class="lbl">TOEIC ✓</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--red)">${r}</div><div class="lbl">Redoublement</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--purple)">${o}</div><div class="lbl">Réorientation</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--orange)">${ec}</div><div class="lbl">Épreuve compl.</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--grey)">${ab}</div><div class="lbl">Abandon</div></div>`;
+  // ── Barre stats globale ──
+  document.getElementById('global-stats').innerHTML =
+    sc(n,   'Total',           'var(--white)')  +
+    sc(t,   'Barre TOEIC \u2713', 'var(--green)',  n ? Math.round(t/n*100)+'%' : '') +
+    sc(r,   'Redoublement',    'var(--red)')    +
+    sc(o,   'R\u00e9orientation',  'var(--purple)') +
+    sc(ec,  '\u00c9preuve compl.', 'var(--orange)') +
+    sc(ab,  'Abandon',         'var(--grey)');
 
-  // ── Tableau récap par dept ──
-  const RATTRAPAGE_TYPES = [
-    'Epreuve complémentaire','Redoublement','Réorientation',
-    'Décision Reportée','Abandon','Année blanche','S6 blanc','S8 blanc'
+  // ── Barre exports ──
+  document.getElementById('export-bar').innerHTML =
+    '<span style="font-size:11px;color:var(--grey);font-weight:700;text-transform:uppercase;letter-spacing:.06em;align-self:center">Exports XLS</span>' +
+    '<button class="btn btn-gold" onclick="exportEC(\'toeic\')">&#128228; EC TOEIC</button>' +
+    '<button class="btn" style="background:rgba(74,144,217,.25);color:#88b8f0;border:1px solid rgba(74,144,217,.4)" onclick="exportEC(\'lv1\')">&#128228; EC Langue LV1</button>' +
+    '<button class="btn" style="background:rgba(155,89,182,.25);color:#c39bd3;border:1px solid rgba(155,89,182,.4)" onclick="exportEC(\'lv2\')">&#128228; EC Langue LV2</button>';
+
+  // ── Ordre des types de rattrapage ──
+  const TYPE_ORDER = [
+    'Epreuve compl\u00e9mentaire',
+    'Redoublement',
+    'R\u00e9orientation',
+    'D\u00e9cision Report\u00e9e',
+    'Ann\u00e9e blanche',
+    'S6 blanc','S8 blanc',
+    'Abandon',
+    '\u2014'
   ];
 
-  const rows = depts.map(dept => {
-    const es  = data.etudiants.filter(e=>e.dept===dept);
-    const dn  = es.length;
-    const dt  = es.filter(e=>e.ec_toeic).length;
-    const pct = dn ? Math.round(dt/dn*100) : 0;
-    const plan = data.planning.find(p=>p.departement===dept);
-    const planInfo = plan
-      ? `${plan.date||'?'} ${plan.heure||''} — ${plan.salle||'?'} (${plan.prof||'?'})`
-      : 'Non planifié';
+  // Couleurs de fond par type (pour les lignes du tableau)
+  const TYPE_BG = {
+    'Epreuve compl\u00e9mentaire': 'rgba(224,120,32,.12)',
+    'Redoublement':               'rgba(224,82,82,.12)',
+    'R\u00e9orientation':          'rgba(155,89,182,.12)',
+    'D\u00e9cision Report\u00e9e': 'rgba(74,144,217,.12)',
+    'Ann\u00e9e blanche':          'rgba(224,82,82,.2)',
+    'S6 blanc':                   'rgba(224,82,82,.1)',
+    'S8 blanc':                   'rgba(224,82,82,.1)',
+    'Abandon':                    'rgba(120,120,140,.12)',
+  };
 
-    // Tableau rattrapage par type × année
-    const annees = [...new Set(es.map(e=>e.annee))].sort();
+  const frag = document.createDocumentFragment();
+
+  // Titre section
+  const secTitle = document.createElement('div');
+  secTitle.className = 'section-title';
+  secTitle.textContent = 'Par d\u00e9partement';
+  frag.appendChild(secTitle);
+
+  // Grille 2 colonnes sur grand écran
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:14px';
+  frag.appendChild(grid);
+
+  depts.forEach(dept => {
+    const es   = data.etudiants.filter(e=>e.dept===dept);
+    const dn   = es.length;
+    const dt   = es.filter(e=>e.ec_toeic).length;
+    const pct  = dn ? Math.round(dt/dn*100) : 0;
+    const plan = data.planning.find(p=>p.departement===dept);
+    const planDate = plan && plan.date  ? plan.date  : '?';
+    const planHeur = plan && plan.heure ? plan.heure : '';
+    const planSall = plan && plan.salle ? plan.salle : '?';
+    const planProf = plan && plan.prof  ? plan.prof  : '?';
+
+    // Agréger par type × année
+    const annees = [...new Set(es.map(e=>e.annee||'?'))].sort();
     const byType = {};
     es.forEach(e => {
-      const type = e.avis || '—';
+      const type = e.avis || '\u2014';
       if (!byType[type]) byType[type] = {};
-      const key = e.annee || '?';
-      byType[type][key] = (byType[type][key]||[]);
-      byType[type][key].push(e.nom);
+      const an = e.annee || '?';
+      if (!byType[type][an]) byType[type][an] = [];
+      byType[type][an].push(e.nom);
     });
-
-    // Construire le mini-tableau
     const types = Object.keys(byType).sort((a,b) => {
-      const ia = RATTRAPAGE_TYPES.indexOf(a), ib = RATTRAPAGE_TYPES.indexOf(b);
-      return (ia===-1?99:ia) - (ib===-1?99:ib);
+      const ia = TYPE_ORDER.indexOf(a), ib = TYPE_ORDER.indexOf(b);
+      return (ia<0?99:ia) - (ib<0?99:ib);
     });
 
-    const tableRows = types.map(type => {
-      const cls = AVIS_MAP[type] || '';
-      const cells = annees.map(an => {
-        const noms = byType[type][an] || [];
-        if (!noms.length) return `<td style="padding:5px 10px;border:1px solid var(--navy3);color:var(--grey2);text-align:center">—</td>`;
-        const list = noms.map(n=>`<span style="display:block;font-size:10px;white-space:nowrap">${esc(n)}</span>`).join('');
-        return `<td style="padding:5px 10px;border:1px solid var(--navy3);vertical-align:top">${list}<span style="font-size:10px;color:var(--grey);margin-top:2px;display:block">(${noms.length})</span></td>`;
-      }).join('');
-      return `<tr>
-        <td style="padding:5px 10px;border:1px solid var(--navy3);white-space:nowrap">
-          <span class="badge ${cls}">${type}</span>
-        </td>
-        ${cells}
-      </tr>`;
-    }).join('');
+    // Card
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;overflow:hidden';
 
-    const anneeHeaders = annees.map(a=>`<th style="padding:5px 10px;border:1px solid var(--navy3);color:var(--gold);font-size:11px;text-align:center;background:var(--navy3)">${a}</th>`).join('');
-    const table = types.length
-      ? `<div style="overflow-x:auto;margin-top:10px">
-          <table style="border-collapse:collapse;width:100%;font-size:12px">
-            <thead><tr>
-              <th style="padding:5px 10px;border:1px solid var(--navy3);color:var(--grey);font-size:11px;background:var(--navy3)">Type de rattrapage</th>
-              ${anneeHeaders}
-            </tr></thead>
-            <tbody>${tableRows}</tbody>
-          </table>
-        </div>`
-      : '<div style="font-size:11px;color:var(--grey2);margin-top:8px">Aucun étudiant</div>';
+    // Card header
+    const head = document.createElement('div');
+    head.style.cssText = 'background:var(--navy3);padding:12px 16px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--gold)';
 
-    return `<div class="stat-card" style="flex:none;width:100%;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
-        <span style="font-size:17px;font-weight:800;color:var(--gold)">${dept}</span>
-        <span style="font-size:11px;color:var(--grey)">📅 ${planInfo}</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
-        <span style="font-size:11px;color:var(--grey)">${dn} étudiant${dn>1?'s':''}</span>
-        <span style="font-size:11px;color:${pct>=80?'var(--green)':pct>=50?'var(--orange)':'var(--red)'}">TOEIC ${dt}/${dn} (${pct}%)</span>
-      </div>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
-      ${table}
-    </div>`;
-  }).join('');
+    const deptSpan = document.createElement('div');
+    deptSpan.innerHTML =
+      '<span style="font-size:20px;font-weight:900;color:var(--gold)">' + esc(dept) + '</span>' +
+      '<span style="font-size:12px;color:var(--grey);margin-left:10px">' + dn + ' \u00e9tudiant' + (dn>1?'s':'') + '</span>';
 
-  document.getElementById('dept-breakdown').innerHTML = rows || '<div style="color:var(--grey2);font-size:13px">Aucune donnée</div>';
+    const planSpan = document.createElement('div');
+    planSpan.style.cssText = 'font-size:11px;color:var(--grey);text-align:right;line-height:1.5';
+    if (plan && plan.date) {
+      planSpan.innerHTML =
+        '<span style="color:var(--white);font-weight:700">' + esc(planDate) + ' ' + esc(planHeur) + '</span>' +
+        '<br><span style="color:var(--grey2)">' + esc(planSall) + ' &mdash; ' + esc(planProf) + '</span>';
+    } else {
+      planSpan.innerHTML = '<span style="color:var(--grey2);font-style:italic">Non planifi\u00e9</span>';
+    }
+
+    head.appendChild(deptSpan);
+    head.appendChild(planSpan);
+    card.appendChild(head);
+
+    // TOEIC bar
+    const toeicBar = document.createElement('div');
+    toeicBar.style.cssText = 'padding:8px 16px 10px;border-bottom:1px solid var(--navy3);display:flex;align-items:center;gap:10px';
+    const barColor = pct>=80 ? 'var(--green)' : pct>=50 ? 'var(--orange)' : 'var(--red)';
+    toeicBar.innerHTML =
+      '<span style="font-size:11px;color:var(--grey);white-space:nowrap">Barre TOEIC</span>' +
+      '<div style="flex:1;height:6px;background:var(--navy3);border-radius:3px;overflow:hidden">' +
+        '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:3px;transition:width .4s"></div>' +
+      '</div>' +
+      '<span style="font-size:12px;font-weight:700;color:' + barColor + ';white-space:nowrap">' + dt + '/' + dn + ' (' + pct + '%)</span>';
+    card.appendChild(toeicBar);
+
+    // Tableau types × années
+    if (types.length) {
+      const tableWrap = document.createElement('div');
+      tableWrap.style.cssText = 'overflow-x:auto;padding:10px 14px 14px';
+
+      const table = document.createElement('table');
+      table.style.cssText = 'border-collapse:collapse;width:100%;font-size:11px';
+
+      // THEAD
+      const thead = document.createElement('thead');
+      const hrow = document.createElement('tr');
+      const th0 = document.createElement('th');
+      th0.style.cssText = 'padding:6px 10px;text-align:left;color:var(--grey);font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--navy3);background:var(--navy3);white-space:nowrap;border-radius:4px 0 0 0';
+      th0.textContent = 'Rattrapage';
+      hrow.appendChild(th0);
+      annees.forEach((an,i) => {
+        const th = document.createElement('th');
+        th.style.cssText = 'padding:6px 10px;text-align:center;color:var(--gold);font-size:11px;font-weight:700;border-bottom:1px solid var(--navy3);background:var(--navy3);' + (i===annees.length-1?'border-radius:0 4px 0 0':'');
+        th.textContent = an;
+        hrow.appendChild(th);
+      });
+      thead.appendChild(hrow);
+      table.appendChild(thead);
+
+      // TBODY
+      const tbody = document.createElement('tbody');
+      types.forEach((type, ti) => {
+        const tr = document.createElement('tr');
+        const rowBg = TYPE_BG[type] || 'transparent';
+        const isLast = ti === types.length - 1;
+
+        // Badge cell
+        const td0 = document.createElement('td');
+        td0.style.cssText = 'padding:7px 10px;border-bottom:' + (isLast?'none':'1px solid rgba(255,255,255,.04)') + ';background:' + rowBg + ';white-space:nowrap';
+        const badge = document.createElement('span');
+        badge.className = 'badge ' + (AVIS_MAP[type] || '');
+        badge.textContent = type;
+        td0.appendChild(badge);
+        tr.appendChild(td0);
+
+        // Année cells
+        annees.forEach(an => {
+          const noms = byType[type][an] || [];
+          const td = document.createElement('td');
+          td.style.cssText = 'padding:7px 10px;border-bottom:' + (isLast?'none':'1px solid rgba(255,255,255,.04)') + ';border-left:1px solid rgba(255,255,255,.04);background:' + rowBg + ';vertical-align:top';
+          if (!noms.length) {
+            td.style.textAlign = 'center';
+            td.style.color = 'var(--grey2)';
+            td.textContent = '\u2014';
+          } else {
+            noms.forEach(nom => {
+              const s = document.createElement('span');
+              s.style.cssText = 'display:block;white-space:nowrap;font-size:10px;color:var(--white);line-height:1.6';
+              s.textContent = nom;
+              td.appendChild(s);
+            });
+            const cnt = document.createElement('span');
+            cnt.style.cssText = 'display:block;font-size:9px;color:var(--grey);margin-top:2px;font-weight:700';
+            cnt.textContent = '(' + noms.length + ')';
+            td.appendChild(cnt);
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      tableWrap.appendChild(table);
+      card.appendChild(tableWrap);
+    } else {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'padding:14px 16px;font-size:11px;color:var(--grey2);font-style:italic';
+      empty.textContent = 'Aucun \u00e9tudiant';
+      card.appendChild(empty);
+    }
+
+    grid.appendChild(card);
+  });
+
+  const breakdown = document.getElementById('dept-breakdown');
+  breakdown.innerHTML = '';
+  if (!depts.length) {
+    breakdown.innerHTML = '<div style="color:var(--grey2);font-size:13px;padding:20px">Aucune donn\u00e9e</div>';
+  } else {
+    breakdown.appendChild(frag);
+  }
 }
+
+// helper stat card
+function sc(val, lbl, color, sub) {
+  return '<div class="stat-card"><div class="val" style="color:' + color + '">' + val +
+    (sub ? '<span style="font-size:11px;color:var(--grey);margin-left:4px">' + sub + '</span>' : '') +
+    '</div><div class="lbl">' + lbl + '</div></div>';
+}
+
 
 // ─── EXPORTS XLS ─────────────────────────────────────────
 function exportEC(type) {
