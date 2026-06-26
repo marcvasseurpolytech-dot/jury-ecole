@@ -34,6 +34,13 @@
       "date": "07/07",
       "heure": "9h30",
       "salle": "A110"
+    },
+    {
+      "prof": "Jean-Yves",
+      "departement": "SE",
+      "date": "07/07",
+      "heure": "9h30",
+      "salle": "A110"
     }
   ],
   "etudiants": [],
