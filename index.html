@@ -179,6 +179,9 @@
   <div class="planning-grid" id="planning-grid"></div>
 
   <div class="section-title">Modifier le planning</div>
+  <div style="margin-bottom:10px">
+    <button class="btn btn-danger" onclick="confirmClearPlanning()">🗑 Effacer le planning</button>
+  </div>
   <div class="table-wrap">
     <table id="planning-table">
       <thead><tr>
@@ -627,7 +630,13 @@ function renderMiniStats() {
 }
 
 // ─── CLEAR ALL ───────────────────────────────────────────
-function confirmClearAll() {
+function confirmClearPlanning() {
+  if (!confirm(`Effacer les ${data.planning.length} entrées du planning ?`)) return;
+  data.planning = [];
+  markDirty(); renderPlanning();
+  toast('Planning vidé — pensez à sauvegarder');
+}
+
   document.getElementById('clear-count').textContent = data.etudiants.length;
   document.getElementById('clear-confirm-input').value = '';
   document.getElementById('modal-clear').classList.add('open');
