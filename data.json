@@ -1,4 +1,12 @@
 {
-  "planning": [],
+  "planning": [
+    {
+      "prof": "Jean-Luc",
+      "departement": "IS2A",
+      "date": "08/07",
+      "heure": "15h00",
+      "salle": "fff"
+    }
+  ],
   "etudiants": []
 }
