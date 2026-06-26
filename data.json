@@ -48,6 +48,13 @@
       "date": "01/07",
       "heure": "10h15",
       "salle": "A110"
+    },
+    {
+      "prof": "",
+      "departement": "GBA",
+      "date": "01/07",
+      "heure": "9h00",
+      "salle": "C107"
     }
   ],
   "etudiants": [],
