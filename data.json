@@ -66,7 +66,7 @@
   ],
   "etudiants": [
     {
-      "traite": false,
+      "traite": true,
       "nom": "2025/2026 - Semestre 6 Polytech Lille (tronc Commun)",
       "dept": "",
       "annee": "3A",
@@ -918,7 +918,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "BOUHELIER Yann",
       "dept": "Meca",
       "annee": "3A",
