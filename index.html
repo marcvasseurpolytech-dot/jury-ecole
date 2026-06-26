@@ -315,6 +315,21 @@
 <!-- ══════ STATS ══════ -->
 <div class="page" id="page-stats">
   <div class="stats-bar" id="global-stats"></div>
+
+  <div class="section-title">Exports</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px">
+    <button class="btn btn-gold" onclick="exportEC('toeic')">
+      📤 EC TOEIC
+    </button>
+    <button class="btn" style="background:rgba(74,144,217,0.25);color:#88b8f0;border:1px solid rgba(74,144,217,0.4)" onclick="exportEC('lv1')">
+      📤 EC Langue LV1
+    </button>
+    <button class="btn" style="background:rgba(155,89,182,0.25);color:#c39bd3;border:1px solid rgba(155,89,182,0.4)" onclick="exportEC('lv2')">
+      📤 EC Langue LV2
+    </button>
+  </div>
+
+  <div class="section-title">Par département</div>
   <div id="dept-breakdown"></div>
 </div>
 
@@ -625,45 +640,165 @@ function doClearAll() {
 }
 
 // ─── STATS ───────────────────────────────────────────────
+// Catégories d'épreuves complémentaires
+// EC TOEIC  : ec_toeic === 0  (TOEIC non validé, quelle que soit la décision)
+// EC LV1    : ec_langue_val === 0 ET ec_langue === 'ANGLAIS' (ou tout autre libellé LV1 renseigné)
+//             en pratique : avis = Epreuve complémentaire ET ec_langue renseignée
+// EC LV2    : avis = Epreuve complémentaire ET ec_langue vide (rattrapage de l'autre langue)
+//
+// Choix retenus : on exporte les étudiants qui ont un rattrapage LANGUE (pas TOEIC) :
+//   EC TOEIC  → ec_toeic == 0 (TOEIC à repasser)
+//   EC LV1    → ec_langue_val == 1 mais avis Epreuve compl. -OR- ec_langue renseignée (LV1 anglais)
+//   EC LV2    → avis Epreuve compl. ET ec_langue_val==0 ET ec_langue vide
+//
+// En l'état des données, les colonnes ec_langue/ec_langue_val distinguent LV1 (renseigné) vs LV2 (vide).
+
 function renderStats() {
   const depts = getUniqDepts();
-  const n = data.etudiants.length;
-  const t = data.etudiants.filter(e=>e.ec_toeic).length;
-  const r = data.etudiants.filter(e=>e.avis==='Redoublement').length;
-  const o = data.etudiants.filter(e=>e.avis==='Réorientation').length;
+  const n  = data.etudiants.length;
+  const t  = data.etudiants.filter(e=>e.ec_toeic).length;
+  const r  = data.etudiants.filter(e=>e.avis==='Redoublement').length;
+  const o  = data.etudiants.filter(e=>e.avis==='Réorientation').length;
   const ec = data.etudiants.filter(e=>e.avis==='Epreuve complémentaire').length;
   const ab = data.etudiants.filter(e=>e.avis==='Abandon').length;
 
   document.getElementById('global-stats').innerHTML = `
     <div class="stat-card"><div class="val">${n}</div><div class="lbl">Total</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--green)">${t} <span style="font-size:12px;color:var(--grey)">(${n?Math.round(t/n*100):0}%)</span></div><div class="lbl">TOEIC ✓</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--green)">${t}<span style="font-size:11px;color:var(--grey)"> (${n?Math.round(t/n*100):0}%)</span></div><div class="lbl">TOEIC ✓</div></div>
     <div class="stat-card"><div class="val" style="color:var(--red)">${r}</div><div class="lbl">Redoublement</div></div>
     <div class="stat-card"><div class="val" style="color:var(--purple)">${o}</div><div class="lbl">Réorientation</div></div>
     <div class="stat-card"><div class="val" style="color:var(--orange)">${ec}</div><div class="lbl">Épreuve compl.</div></div>
     <div class="stat-card"><div class="val" style="color:var(--grey)">${ab}</div><div class="lbl">Abandon</div></div>`;
 
+  // ── Tableau récap par dept ──
+  const RATTRAPAGE_TYPES = [
+    'Epreuve complémentaire','Redoublement','Réorientation',
+    'Décision Reportée','Abandon','Année blanche','S6 blanc','S8 blanc'
+  ];
+
   const rows = depts.map(dept => {
-    const es = data.etudiants.filter(e=>e.dept===dept);
-    const dn = es.length;
-    const dt = es.filter(e=>e.ec_toeic).length;
+    const es  = data.etudiants.filter(e=>e.dept===dept);
+    const dn  = es.length;
+    const dt  = es.filter(e=>e.ec_toeic).length;
     const pct = dn ? Math.round(dt/dn*100) : 0;
-    const byAvis = {};
-    es.forEach(e=>{ if(e.avis) byAvis[e.avis]=(byAvis[e.avis]||0)+1; });
-    const pills = Object.entries(byAvis).map(([k,v])=>`<span class="badge ${AVIS_MAP[k]||''}">${k} (${v})</span>`).join(' ');
     const plan = data.planning.find(p=>p.departement===dept);
-    const planInfo = plan ? `${plan.date||'?'} ${plan.heure||''} — ${plan.salle||'?'} (${plan.prof||'?'})` : 'Non planifié';
-    return `<div class="stat-card" style="flex:none;width:100%;margin-bottom:10px">
+    const planInfo = plan
+      ? `${plan.date||'?'} ${plan.heure||''} — ${plan.salle||'?'} (${plan.prof||'?'})`
+      : 'Non planifié';
+
+    // Tableau rattrapage par type × année
+    const annees = [...new Set(es.map(e=>e.annee))].sort();
+    const byType = {};
+    es.forEach(e => {
+      const type = e.avis || '—';
+      if (!byType[type]) byType[type] = {};
+      const key = e.annee || '?';
+      byType[type][key] = (byType[type][key]||[]);
+      byType[type][key].push(e.nom);
+    });
+
+    // Construire le mini-tableau
+    const types = Object.keys(byType).sort((a,b) => {
+      const ia = RATTRAPAGE_TYPES.indexOf(a), ib = RATTRAPAGE_TYPES.indexOf(b);
+      return (ia===-1?99:ia) - (ib===-1?99:ib);
+    });
+
+    const tableRows = types.map(type => {
+      const cls = AVIS_MAP[type] || '';
+      const cells = annees.map(an => {
+        const noms = byType[type][an] || [];
+        if (!noms.length) return `<td style="padding:5px 10px;border:1px solid var(--navy3);color:var(--grey2);text-align:center">—</td>`;
+        const list = noms.map(n=>`<span style="display:block;font-size:10px;white-space:nowrap">${esc(n)}</span>`).join('');
+        return `<td style="padding:5px 10px;border:1px solid var(--navy3);vertical-align:top">${list}<span style="font-size:10px;color:var(--grey);margin-top:2px;display:block">(${noms.length})</span></td>`;
+      }).join('');
+      return `<tr>
+        <td style="padding:5px 10px;border:1px solid var(--navy3);white-space:nowrap">
+          <span class="badge ${cls}">${type}</span>
+        </td>
+        ${cells}
+      </tr>`;
+    }).join('');
+
+    const anneeHeaders = annees.map(a=>`<th style="padding:5px 10px;border:1px solid var(--navy3);color:var(--gold);font-size:11px;text-align:center;background:var(--navy3)">${a}</th>`).join('');
+    const table = types.length
+      ? `<div style="overflow-x:auto;margin-top:10px">
+          <table style="border-collapse:collapse;width:100%;font-size:12px">
+            <thead><tr>
+              <th style="padding:5px 10px;border:1px solid var(--navy3);color:var(--grey);font-size:11px;background:var(--navy3)">Type de rattrapage</th>
+              ${anneeHeaders}
+            </tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>`
+      : '<div style="font-size:11px;color:var(--grey2);margin-top:8px">Aucun étudiant</div>';
+
+    return `<div class="stat-card" style="flex:none;width:100%;margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
         <span style="font-size:17px;font-weight:800;color:var(--gold)">${dept}</span>
         <span style="font-size:11px;color:var(--grey)">📅 ${planInfo}</span>
       </div>
-      <div style="font-size:11px;color:var(--grey);margin-top:2px">${dn} étudiant${dn>1?'s':''}</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
+        <span style="font-size:11px;color:var(--grey)">${dn} étudiant${dn>1?'s':''}</span>
+        <span style="font-size:11px;color:${pct>=80?'var(--green)':pct>=50?'var(--orange)':'var(--red)'}">TOEIC ${dt}/${dn} (${pct}%)</span>
+      </div>
       <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
-      <div style="font-size:11px;color:var(--grey);margin-top:3px">TOEIC : ${dt}/${dn} (${pct}%)</div>
-      <div style="margin-top:7px;display:flex;flex-wrap:wrap;gap:4px">${pills||'<span style="font-size:11px;color:var(--grey2)">—</span>'}</div>
+      ${table}
     </div>`;
   }).join('');
-  document.getElementById('dept-breakdown').innerHTML = `<div class="section-title">Par département</div>${rows}`;
+
+  document.getElementById('dept-breakdown').innerHTML = rows || '<div style="color:var(--grey2);font-size:13px">Aucune donnée</div>';
+}
+
+// ─── EXPORTS XLS ─────────────────────────────────────────
+function exportEC(type) {
+  let rows = [];
+  let filename = '';
+  const header = ['Nom', 'Département', 'Année', 'Avis jury', 'Redoublement', 'Commentaire'];
+
+  if (type === 'toeic') {
+    // Tous ceux qui n'ont pas validé le TOEIC (hors abandon/réorientation si souhaité)
+    rows = data.etudiants
+      .filter(e => !e.ec_toeic)
+      .sort((a,b) => a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
+      .map(e => [e.nom, e.dept, e.annee, e.avis||'', e.redoublement||'', e.commentaire||'']);
+    filename = 'EC_TOEIC.xlsx';
+  } else if (type === 'lv1') {
+    // EC LV1 = ec_langue renseignée (ANGLAIS ou autre LV1 nommée)
+    rows = data.etudiants
+      .filter(e => e.ec_langue && e.ec_langue.trim())
+      .sort((a,b) => a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
+      .map(e => [e.nom, e.dept, e.annee, e.ec_langue, e.avis||'', e.commentaire||'']);
+    const h = ['Nom', 'Département', 'Année', 'EC Langue (LV1)', 'Avis jury', 'Commentaire'];
+    _writeXLS([h, ...rows], filename = 'EC_Langue_LV1.xlsx');
+    return;
+  } else if (type === 'lv2') {
+    // EC LV2 = avis Epreuve complémentaire ET ec_langue vide (langue 2 non renseignée)
+    rows = data.etudiants
+      .filter(e => e.avis === 'Epreuve complémentaire' && (!e.ec_langue || !e.ec_langue.trim()))
+      .sort((a,b) => a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
+      .map(e => [e.nom, e.dept, e.annee, e.avis||'', e.redoublement||'', e.commentaire||'']);
+    filename = 'EC_Langue_LV2.xlsx';
+  }
+
+  _writeXLS([header, ...rows], filename);
+}
+
+function _writeXLS(sheetData, filename) {
+  if (sheetData.length <= 1) { toast('Aucun étudiant dans cette liste', true); return; }
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(sheetData);
+
+  // Column widths
+  ws['!cols'] = sheetData[0].map((_,i) => {
+    const max = sheetData.reduce((m,r) => Math.max(m, String(r[i]||'').length), 10);
+    return { wch: Math.min(max + 2, 45) };
+  });
+
+  // Header style (basic — xlsx doesn't support rich styles without xlsx-style)
+  XLSX.utils.book_append_sheet(wb, ws, 'Export');
+  XLSX.writeFile(wb, filename);
+  toast(`${sheetData.length - 1} lignes exportées → ${filename}`);
 }
 
 // ─── IMPORT XLS ──────────────────────────────────────────
