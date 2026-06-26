@@ -623,6 +623,7 @@ function confirmClearPlanning() {
   toast('Planning vidé — pensez à sauvegarder');
 }
 
+function confirmClearAll() {
   document.getElementById('clear-count').textContent = data.etudiants.length;
   document.getElementById('clear-confirm-input').value = '';
   document.getElementById('modal-clear').classList.add('open');
