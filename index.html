@@ -572,22 +572,26 @@ function renderPlanning() {
     </div>`;
   }).join('');
 
-  const makeOpts = (vals, cur) => vals.map(v => `<option${cur===v?' selected':''}>${v}</option>`).join('');
+  const makeOpts = (vals, cur) => {
+    const opts = ['<option value="">—</option>'];
+    vals.forEach(v => opts.push(`<option${cur===v?' selected':''}>${v}</option>`));
+    return opts.join('');
+  };
 
   const tbody = document.getElementById('planning-tbody');
   tbody.innerHTML = data.planning.map((p,i) => `
     <tr>
       <td><select class="editable" onchange="data.planning[${i}].prof=this.value;markDirty(true);renderPlanning()">
-        <option value="">${p.prof||'—'}</option>${makeOpts(PROFS, p.prof)}
+        ${makeOpts(PROFS, p.prof)}
       </select></td>
       <td><select class="editable" onchange="data.planning[${i}].departement=this.value;markDirty(true);renderPlanning()">
-        <option value="">${p.departement||'—'}</option>${makeOpts(DEPTS, p.departement)}
+        ${makeOpts(DEPTS, p.departement)}
       </select></td>
       <td><select class="editable" onchange="data.planning[${i}].date=this.value;markDirty(true);renderPlanning()">
-        <option value="">${p.date||'—'}</option>${makeOpts(DATES, p.date)}
+        ${makeOpts(DATES, p.date)}
       </select></td>
       <td><select class="editable" onchange="data.planning[${i}].heure=this.value;markDirty(true);renderPlanning()">
-        <option value="">${p.heure||'—'}</option>${makeOpts(HEURES, p.heure)}
+        ${makeOpts(HEURES, p.heure)}
       </select></td>
       <td><input class="editable" value="${esc(p.salle||'')}" style="width:70px" onchange="data.planning[${i}].salle=this.value;markDirty()"></td>
       <td><button class="btn-del" onclick="deletePlanning(${i})">🗑</button></td>
