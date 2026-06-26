@@ -197,7 +197,7 @@
     <div class="logo-badge">P</div>
     <div>
       <div class="header-title">Jury École — Langues</div>
-      <div class="header-sub">Polytech Lille · Département des langues</div>
+      <div class="header-sub">Polytech Lille · Département des langues · <span id="annee-display" onclick="editAnneeScolaire()" title="Cliquer pour modifier" style="color:var(--gold);cursor:pointer;font-weight:700">2025-2026</span></div>
     </div>
   </div>
   <div class="header-right">
@@ -784,7 +784,7 @@ function renderStats() {
   // Titre section
   const secTitle = document.createElement('div');
   secTitle.className = 'section-title';
-  secTitle.textContent = 'Par département';
+  secTitle.textContent = 'Par departement - ' + (data.annee || '2025-2026');
   frag.appendChild(secTitle);
 
   // Grille 2 colonnes sur grand écran
@@ -1221,10 +1221,10 @@ function exportPlanningPDF() {
   // Title
   doc.setTextColor(...white);
   doc.setFontSize(15); doc.setFont('helvetica','bold');
-  doc.text('Planning Jury Ecole - Langues', ml + 16, 13);
+  doc.text('Planning Jury Ecole - Langues ' + (data.annee||'2025-2026'), ml + 16, 13);
   doc.setFontSize(9); doc.setFont('helvetica','normal');
   doc.setTextColor(180, 190, 210);
-  doc.text('Polytech Lille - Departement des Langues', ml + 16, 19);
+  doc.text('Polytech Lille - Departement des Langues - ' + (data.annee||'2025-2026'), ml + 16, 19);
 
   // Date
   doc.setFontSize(8); doc.setTextColor(180, 190, 210);
@@ -1279,7 +1279,7 @@ function exportPlanningPDF() {
   doc.line(ml, finalY, W - mr, finalY);
   doc.setFontSize(8); doc.setFont('helvetica','normal');
   doc.setTextColor(...grey);
-  doc.text('Polytech Lille - Jury Ecole Langues', ml, finalY + 5);
+  doc.text('Polytech Lille - Jury Ecole Langues - ' + (data.annee||'2025-2026'), ml, finalY + 5);
   doc.text('© M. Vasseur', W - mr, finalY + 5, {align:'right'});
 
   doc.save('Planning_Jury_Ecole_Langues.pdf');
@@ -1305,7 +1305,26 @@ function toast(msg, err=false) {
   setTimeout(()=>t.className='', 3000);
 }
 
+function updateAnneeScolaire() {
+  const annee = data.annee || '2025-2026';
+  document.getElementById('annee-display').textContent = annee;
+  document.title = 'Jury Ecole Langues ' + annee + ' - Polytech Lille';
+}
+
+function editAnneeScolaire() {
+  const cur = data.annee || '2025-2026';
+  const val = prompt('Annee scolaire :', cur);
+  if (val === null) return;
+  const clean = val.trim();
+  if (!clean) return;
+  data.annee = clean;
+  updateAnneeScolaire();
+  markDirty(true);
+}
+
 function renderAll() {
+  if (!data.annee) data.annee = '2025-2026';
+  updateAnneeScolaire();
   renderPlanning();
   populateFilters();
   renderTable();
