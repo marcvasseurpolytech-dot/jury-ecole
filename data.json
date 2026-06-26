@@ -78,7 +78,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "ECUE :",
       "dept": "",
       "annee": "3A",
