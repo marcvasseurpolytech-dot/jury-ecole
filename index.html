@@ -197,7 +197,7 @@
     <div class="logo-badge">P</div>
     <div>
       <div class="header-title">Jury École — Langues</div>
-      <div class="header-sub">Polytech Lille · Département des langues · <span id="annee-display" onclick="editAnneeScolaire()" title="Cliquer pour modifier" style="color:var(--gold);cursor:pointer;font-weight:700">2025-2026</span></div>
+      <div class="header-sub">Polytech Lille · Département des langues · <span id="annee-display" onclick="editAnneeScolaire()" title="Cliquer pour modifier" style="color:var(--gold);cursor:pointer;font-weight:700">2025-2026</span> <span style="color:var(--grey2);font-size:10px">(cliquer pour modifier)</span> <span id="annee-warning" style="display:none;color:var(--red);font-size:10px;font-weight:700">⚠ Vérifier l'année !</span></div>
     </div>
   </div>
   <div class="header-right">
@@ -1309,6 +1309,20 @@ function updateAnneeScolaire() {
   const annee = data.annee || '2025-2026';
   document.getElementById('annee-display').textContent = annee;
   document.title = 'Jury Ecole Langues ' + annee + ' - Polytech Lille';
+  // Avertissement si l'année scolaire semble périmée
+  // On extrait la 2e année (ex: "2025-2026" -> 2026), on compare à l'année courante
+  const warn = document.getElementById('annee-warning');
+  if (warn) {
+    const match = annee.match(/(\d{4})/g);
+    const endYear = match ? parseInt(match[match.length - 1]) : null;
+    const curYear = new Date().getFullYear();
+    if (endYear && curYear > endYear) {
+      warn.textContent = '\u26a0 Annee ' + annee + ' peut etre perimee - verifier !';
+      warn.style.display = 'inline';
+    } else {
+      warn.style.display = 'none';
+    }
+  }
 }
 
 function editAnneeScolaire() {
