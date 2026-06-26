@@ -514,7 +514,14 @@ async function saveData() {
 }
 
 function setSaveStatus(msg) { document.getElementById('save-status').textContent = msg; }
-function markDirty() { dirty = true; setSaveStatus('● Non sauvegardé'); }
+
+let _autoSaveTimer = null;
+function markDirty(immediate) {
+  dirty = true;
+  setSaveStatus('● Sauvegarde auto...');
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => saveData(), immediate ? 300 : 1200);
+}
 
 // ─── TABS ────────────────────────────────────────────────
 function switchTab(name) {
@@ -570,16 +577,16 @@ function renderPlanning() {
   const tbody = document.getElementById('planning-tbody');
   tbody.innerHTML = data.planning.map((p,i) => `
     <tr>
-      <td><select class="editable" onchange="data.planning[${i}].prof=this.value;markDirty();renderPlanning()">
+      <td><select class="editable" onchange="data.planning[${i}].prof=this.value;markDirty(true);renderPlanning()">
         <option value="">${p.prof||'—'}</option>${makeOpts(PROFS, p.prof)}
       </select></td>
-      <td><select class="editable" onchange="data.planning[${i}].departement=this.value;markDirty();renderPlanning()">
+      <td><select class="editable" onchange="data.planning[${i}].departement=this.value;markDirty(true);renderPlanning()">
         <option value="">${p.departement||'—'}</option>${makeOpts(DEPTS, p.departement)}
       </select></td>
-      <td><select class="editable" onchange="data.planning[${i}].date=this.value;markDirty();renderPlanning()">
+      <td><select class="editable" onchange="data.planning[${i}].date=this.value;markDirty(true);renderPlanning()">
         <option value="">${p.date||'—'}</option>${makeOpts(DATES, p.date)}
       </select></td>
-      <td><select class="editable" onchange="data.planning[${i}].heure=this.value;markDirty();renderPlanning()">
+      <td><select class="editable" onchange="data.planning[${i}].heure=this.value;markDirty(true);renderPlanning()">
         <option value="">${p.heure||'—'}</option>${makeOpts(HEURES, p.heure)}
       </select></td>
       <td><input class="editable" value="${esc(p.salle||'')}" style="width:70px" onchange="data.planning[${i}].salle=this.value;markDirty()"></td>
@@ -591,11 +598,11 @@ function addPlanning() {
   const p = { prof: v('np-prof'), departement: v('np-dept'), date: v('np-date'), heure: v('np-heure'), salle: v('np-salle') };
   if (!p.prof && !p.departement) return;
   data.planning.push(p);
-  markDirty(); renderPlanning();
+  markDirty(true); renderPlanning();
   ['np-dept','np-date','np-heure','np-salle'].forEach(id => document.getElementById(id).value='');
 }
 
-function deletePlanning(i) { data.planning.splice(i,1); markDirty(); renderPlanning(); }
+function deletePlanning(i) { data.planning.splice(i,1); markDirty(true); renderPlanning(); }
 
 // ─── ETUDIANTS ───────────────────────────────────────────
 function getUniqDepts() { return [...new Set(data.etudiants.map(e=>e.dept))].sort(); }
@@ -638,16 +645,16 @@ function renderTable() {
     const e = data.etudiants[i];
     const avisOpts = AVIS_LIST.map(a => `<option value="${a}"${e.avis===a?' selected':''}>${a||'—'}</option>`).join('');
     return `<tr style="${e.traite?'opacity:0.45':''}">
-      <td><input type="checkbox" class="traite-check" ${e.traite?'checked':''} onchange="data.etudiants[${i}].traite=this.checked;markDirty();renderTable()"></td>
+      <td><input type="checkbox" class="traite-check" ${e.traite?'checked':''} onchange="data.etudiants[${i}].traite=this.checked;markDirty(true);renderTable()"></td>
       <td style="font-weight:600;white-space:nowrap">${esc(e.nom)}</td>
       <td><span style="color:var(--gold);font-weight:700">${esc(e.dept)}</span></td>
       <td>${esc(e.annee)}</td>
       <td style="font-size:11px;color:var(--grey)">${esc(e.ec_langue||'')}</td>
-      <td><select class="editable" style="min-width:130px" onchange="data.etudiants[${i}].ec_toeic=parseInt(this.value);markDirty();renderTable()">
+      <td><select class="editable" style="min-width:130px" onchange="data.etudiants[${i}].ec_toeic=parseInt(this.value);markDirty(true);renderTable()">
         <option value="1"${e.ec_toeic?' selected':''}>✓ Barre validée</option>
         <option value="0"${!e.ec_toeic?' selected':''}>✗ EC TOEIC</option>
       </select></td>
-      <td><select class="editable" style="min-width:140px" onchange="data.etudiants[${i}].avis=this.value;markDirty();renderTable()">${avisOpts}</select></td>
+      <td><select class="editable" style="min-width:140px" onchange="data.etudiants[${i}].avis=this.value;markDirty(true);renderTable()">${avisOpts}</select></td>
       <td><input class="editable" value="${esc(e.redoublement||'')}" style="min-width:90px" onchange="data.etudiants[${i}].redoublement=this.value;markDirty()"></td>
       <td><input class="editable" value="${esc(e.commentaire||'')}" style="min-width:160px" onchange="data.etudiants[${i}].commentaire=this.value;markDirty()" title="${esc(e.commentaire||'')}"></td>
       <td><button class="btn-del" onclick="deleteEtudiant(${i})">🗑</button></td>
@@ -662,7 +669,7 @@ function addEtudiant() {
     ec_langue:v('ne-eclangue'), ec_langue_val:0, ec_toeic:parseInt(v('ne-toeic')),
     avis:v('ne-avis'), redoublement:'', commentaire:v('ne-comment') };
   if (!e.nom) return;
-  data.etudiants.push(e); markDirty(); populateFilters(); renderTable();
+  data.etudiants.push(e); markDirty(true); populateFilters(); renderTable();
   document.getElementById('ne-nom').value='';
   document.getElementById('ne-eclangue').value='';
   document.getElementById('ne-comment').value='';
@@ -670,7 +677,7 @@ function addEtudiant() {
 
 function deleteEtudiant(i) {
   if (!confirm(`Supprimer ${data.etudiants[i].nom} ?`)) return;
-  data.etudiants.splice(i,1); markDirty(); populateFilters(); renderTable();
+  data.etudiants.splice(i,1); markDirty(true); populateFilters(); renderTable();
 }
 
 function renderMiniStats() {
@@ -693,7 +700,7 @@ function renderMiniStats() {
 function confirmClearPlanning() {
   if (!confirm(`Effacer les ${data.planning.length} entrées du planning ?`)) return;
   data.planning = [];
-  markDirty(); renderPlanning();
+  markDirty(true); renderPlanning();
   toast('Planning vidé — pensez à sauvegarder');
 }
 
@@ -708,7 +715,7 @@ function doClearAll() {
     toast('Tapez exactement EFFACER pour confirmer', true); return;
   }
   data.etudiants = [];
-  markDirty(); closeClear(); populateFilters(); renderTable();
+  markDirty(true); closeClear(); populateFilters(); renderTable();
   toast('Liste vidée — pensez à sauvegarder');
 }
 
@@ -1173,7 +1180,7 @@ function confirmImport() {
     };
     data.etudiants.push(e); added++;
   });
-  markDirty(); closeImport(); populateFilters(); renderTable();
+  markDirty(true); closeImport(); populateFilters(); renderTable();
   toast(`${added} étudiant${added>1?'s':''} importé${added>1?'s':''}`);
 }
 
