@@ -55,6 +55,13 @@
       "date": "01/07",
       "heure": "9h00",
       "salle": "C107"
+    },
+    {
+      "prof": "",
+      "departement": "GC",
+      "date": "03/07",
+      "heure": "14h00",
+      "salle": "Arsonval"
     }
   ],
   "etudiants": [],
