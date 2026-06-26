@@ -554,8 +554,18 @@ function syncQuickSearch(val) {
 
 // ─── PLANNING ────────────────────────────────────────────
 function renderPlanning() {
+  const DATE_ORDER = ['25/06','26/06','27/06','28/06','29/06','30/06',
+    '01/07','02/07','03/07','04/07','05/07','06/07','07/07','08/07','09/07','10/07'];
+  const sortedIdx = data.planning.map((_,i)=>i).sort((a,b) => {
+    const da = DATE_ORDER.indexOf(data.planning[a].date);
+    const db = DATE_ORDER.indexOf(data.planning[b].date);
+    if (da !== db) return (da<0?99:da) - (db<0?99:db);
+    return (data.planning[a].heure||'').localeCompare(data.planning[b].heure||'');
+  });
+
   const grid = document.getElementById('planning-grid');
-  grid.innerHTML = data.planning.map(p => {
+  grid.innerHTML = sortedIdx.map(idx => {
+    const p = data.planning[idx];
     const hasDate = p.date && p.date.trim();
     return `<div class="planning-card ${hasDate?'':'no-date'}">
       <div class="dept-title">${esc(p.departement||'—')}</div>
@@ -573,7 +583,7 @@ function renderPlanning() {
   };
 
   const tbody = document.getElementById('planning-tbody');
-  tbody.innerHTML = data.planning.map((p,i) => `
+  tbody.innerHTML = sortedIdx.map(i => { const p = data.planning[i]; return `
     <tr>
       <td><select class="editable" onchange="data.planning[${i}].prof=this.value;markDirty(true);renderPlanning()">
         ${makeOpts(PROFS, p.prof)}
@@ -589,7 +599,7 @@ function renderPlanning() {
       </select></td>
       <td><input class="editable" value="${esc(p.salle||'')}" style="width:70px" onchange="data.planning[${i}].salle=this.value;markDirty()"></td>
       <td><button class="btn-del" onclick="deletePlanning(${i})">🗑</button></td>
-    </tr>`).join('');
+    </tr>`;}).join('');
 }
 
 function addPlanning() {
