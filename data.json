@@ -41,6 +41,13 @@
       "date": "29/06",
       "heure": "9h30",
       "salle": "A110"
+    },
+    {
+      "prof": "Jean-Yves",
+      "departement": "MECA",
+      "date": "01/07",
+      "heure": "10h15",
+      "salle": "A110"
     }
   ],
   "etudiants": [],
