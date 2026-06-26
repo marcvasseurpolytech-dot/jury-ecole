@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jury École — Langues · Polytech Lille</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root {
     --navy: #0a1628;
@@ -19,343 +20,134 @@
     --blue: #4a90d9;
     --green: #3cb37a;
     --purple: #9b59b6;
-    --teal: #2aa198;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; }
 
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: var(--navy);
-    color: var(--white);
-    min-height: 100vh;
-  }
-
-  /* HEADER */
   header {
     background: var(--navy2);
     border-bottom: 2px solid var(--gold);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
   }
-  .header-left { display: flex; align-items: center; gap: 14px; }
-  .logo-badge {
-    width: 38px; height: 38px;
-    background: var(--gold);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 18px; color: var(--navy);
-  }
-  .header-title { font-size: 17px; font-weight: 700; letter-spacing: 0.03em; }
-  .header-sub { font-size: 12px; color: var(--grey); margin-top: 1px; }
-  .save-btn {
-    background: var(--gold);
-    color: var(--navy);
-    border: none;
-    padding: 8px 18px;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
-    transition: background 0.2s;
-  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo-badge { width: 36px; height: 36px; background: var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 17px; color: var(--navy); }
+  .header-title { font-size: 16px; font-weight: 700; }
+  .header-sub { font-size: 11px; color: var(--grey); margin-top: 1px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .author-tag { font-size: 10px; color: var(--grey2); letter-spacing: 0.03em; }
+  #save-status { font-size: 11px; color: var(--grey); }
+  .save-btn { background: var(--gold); color: var(--navy); border: none; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
   .save-btn:hover { background: var(--gold-light); }
   .save-btn:disabled { background: var(--grey2); color: var(--grey); cursor: default; }
-  #save-status { font-size: 12px; color: var(--grey); margin-right: 10px; }
 
-  /* TABS */
-  .tabs {
-    display: flex;
-    background: var(--navy2);
-    border-bottom: 1px solid var(--grey2);
-    padding: 0 24px;
-    gap: 2px;
-  }
-  .tab {
-    padding: 11px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--grey);
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s;
-  }
+  .tabs { display: flex; background: var(--navy2); border-bottom: 1px solid var(--grey2); padding: 0 20px; gap: 2px; }
+  .tab { padding: 10px 18px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
   .tab:hover { color: var(--white); }
   .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
 
-  /* CONTENT */
-  .page { display: none; padding: 24px; }
+  .page { display: none; padding: 20px; }
   .page.active { display: block; }
 
-  /* STATS BAR */
-  .stats-bar {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 22px;
-    flex-wrap: wrap;
-  }
-  .stat-card {
-    background: var(--navy2);
-    border: 1px solid var(--navy3);
-    border-radius: 10px;
-    padding: 12px 18px;
-    min-width: 120px;
-    flex: 1;
-  }
-  .stat-card .val { font-size: 26px; font-weight: 800; color: var(--gold); }
-  .stat-card .lbl { font-size: 11px; color: var(--grey); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .section-title { font-size: 12px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin: 20px 0 12px; padding-bottom: 5px; border-bottom: 1px solid var(--navy3); }
+
+  /* STATS */
+  .stats-bar { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .stat-card { background: var(--navy2); border: 1px solid var(--navy3); border-radius: 10px; padding: 11px 16px; min-width: 110px; flex: 1; }
+  .stat-card .val { font-size: 24px; font-weight: 800; color: var(--gold); }
+  .stat-card .lbl { font-size: 10px; color: var(--grey); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
 
   /* FILTERS */
-  .filters {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-    align-items: center;
+  .filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  .filter-select, .search-input {
+    background: var(--navy2); border: 1px solid var(--grey2); color: var(--white);
+    padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
   }
-  .filter-select {
-    background: var(--navy2);
-    border: 1px solid var(--grey2);
-    color: var(--white);
-    padding: 7px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .search-input {
-    background: var(--navy2);
-    border: 1px solid var(--grey2);
-    color: var(--white);
-    padding: 7px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    width: 220px;
-  }
+  .search-input { width: 200px; }
   .search-input::placeholder { color: var(--grey); }
+
+  /* TOOLBAR */
+  .toolbar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: filter 0.15s; }
+  .btn:hover { filter: brightness(1.12); }
+  .btn-danger { background: rgba(224,82,82,0.2); color: #f08080; border: 1px solid rgba(224,82,82,0.4); }
+  .btn-success { background: rgba(60,179,122,0.2); color: #70d9a0; border: 1px solid rgba(60,179,122,0.4); }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-gold { background: var(--gold); color: var(--navy); }
 
   /* TABLE */
   .table-wrap { overflow-x: auto; border-radius: 10px; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  thead th {
-    background: var(--navy3);
-    color: var(--grey);
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 2px solid var(--gold);
-    white-space: nowrap;
-  }
-  tbody tr {
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    transition: background 0.15s;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { background: var(--navy3); color: var(--grey); text-transform: uppercase; font-size: 10px; letter-spacing: 0.06em; padding: 9px 10px; text-align: left; border-bottom: 2px solid var(--gold); white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; }
   tbody tr:hover { background: rgba(201,162,39,0.07); }
-  tbody td {
-    padding: 9px 12px;
-    vertical-align: middle;
-  }
+  tbody td { padding: 7px 10px; vertical-align: middle; }
 
-  /* BADGES */
-  .badge {
-    display: inline-block;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; white-space: nowrap; }
   .badge-redoublement { background: rgba(224,82,82,0.18); color: #f08080; border: 1px solid rgba(224,82,82,0.3); }
   .badge-reorientation { background: rgba(155,89,182,0.18); color: #c39bd3; border: 1px solid rgba(155,89,182,0.3); }
   .badge-ec { background: rgba(224,120,32,0.18); color: #f0a060; border: 1px solid rgba(224,120,32,0.3); }
   .badge-abandon { background: rgba(100,100,120,0.3); color: #aaa; border: 1px solid rgba(150,150,170,0.3); }
   .badge-reporte { background: rgba(74,144,217,0.18); color: #88b8f0; border: 1px solid rgba(74,144,217,0.3); }
   .badge-annee-blanche { background: rgba(224,82,82,0.3); color: #ff9090; border: 1px solid rgba(224,82,82,0.5); }
-  .badge-ok { background: rgba(60,179,122,0.18); color: #70d9a0; border: 1px solid rgba(60,179,122,0.3); }
-  .badge-vide { background: transparent; color: var(--grey); }
 
-  /* TOEIC dot */
-  .toeic-dot {
-    display: inline-block;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    margin-right: 5px;
-  }
+  .toeic-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; }
   .dot-ok { background: var(--green); }
   .dot-ko { background: var(--grey2); }
 
-  /* Traite checkbox */
-  .traite-check {
-    width: 18px; height: 18px;
-    cursor: pointer;
-    accent-color: var(--gold);
-  }
+  .traite-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--gold); }
 
-  /* Inline edit */
-  .editable {
-    background: transparent;
-    border: none;
-    color: var(--white);
-    font-size: 13px;
-    width: 100%;
-    padding: 2px 4px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .editable:hover, .editable:focus {
-    background: rgba(201,162,39,0.12);
-    outline: 1px solid var(--gold);
-  }
+  .editable { background: transparent; border: none; color: var(--white); font-size: 12px; width: 100%; padding: 2px 4px; border-radius: 4px; cursor: pointer; }
+  .editable:hover, .editable:focus { background: rgba(201,162,39,0.12); outline: 1px solid var(--gold); }
   select.editable option { background: var(--navy2); }
 
-  /* PLANNING TABLE */
-  .planning-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 14px;
-    margin-top: 20px;
-  }
-  .planning-card {
-    background: var(--navy2);
-    border: 1px solid var(--navy3);
-    border-left: 4px solid var(--gold);
-    border-radius: 10px;
-    padding: 16px;
-  }
-  .planning-card .dept-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--gold);
-    margin-bottom: 6px;
-  }
-  .planning-card .prof-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 10px;
-  }
-  .planning-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .planning-info-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--grey);
-  }
-  .planning-info-row .ico { font-size: 14px; }
+  /* PLANNING CARDS */
+  .planning-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .planning-card { background: var(--navy2); border: 1px solid var(--navy3); border-left: 4px solid var(--gold); border-radius: 10px; padding: 14px; }
+  .planning-card.no-date { border-left-color: var(--grey2); opacity: 0.65; }
+  .planning-card .dept-title { font-size: 17px; font-weight: 800; color: var(--gold); margin-bottom: 4px; }
+  .planning-card .prof-name { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 8px; }
+  .planning-info-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--grey); margin-bottom: 3px; }
   .planning-info-row span { color: var(--white); font-weight: 600; }
-  .planning-card.no-date { border-left-color: var(--grey2); opacity: 0.7; }
 
-  /* PROGRESS */
-  .dept-progress {
-    margin-bottom: 4px;
-  }
-  .progress-bar-wrap {
-    height: 4px;
-    background: var(--navy3);
-    border-radius: 2px;
-    margin-top: 8px;
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: var(--gold);
-    border-radius: 2px;
-    transition: width 0.3s;
-  }
-
-  /* ADD ROW FORM */
-  .add-row-form {
-    background: var(--navy2);
-    border: 1px dashed var(--grey2);
-    border-radius: 10px;
-    padding: 16px;
-    margin-top: 14px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: flex-end;
-  }
-  .form-field { display: flex; flex-direction: column; gap: 4px; }
-  .form-field label { font-size: 11px; color: var(--grey); text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-field input, .form-field select {
-    background: var(--navy3);
-    border: 1px solid var(--grey2);
-    color: var(--white);
-    padding: 7px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    min-width: 120px;
-  }
-  .btn-add {
-    background: var(--green);
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 13px;
-  }
+  /* ADD FORM */
+  .add-row-form { background: var(--navy2); border: 1px dashed var(--grey2); border-radius: 10px; padding: 14px; margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+  .form-field { display: flex; flex-direction: column; gap: 3px; }
+  .form-field label { font-size: 10px; color: var(--grey); text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-field input, .form-field select { background: var(--navy3); border: 1px solid var(--grey2); color: var(--white); padding: 6px 9px; border-radius: 6px; font-size: 12px; min-width: 110px; }
+  .btn-add { background: var(--green); color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px; }
   .btn-add:hover { filter: brightness(1.1); }
-  .btn-del {
-    background: none;
-    border: none;
-    color: var(--grey2);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 4px;
-  }
+  .btn-del { background: none; border: none; color: var(--grey2); cursor: pointer; font-size: 14px; padding: 3px; }
   .btn-del:hover { color: var(--red); }
 
-  /* SECTION TITLES */
-  .section-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--gold);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin: 22px 0 12px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--navy3);
-  }
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 500; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--navy2); border: 1px solid var(--navy3); border-radius: 12px; width: 96vw; max-width: 900px; max-height: 92vh; display: flex; flex-direction: column; }
+  .modal-header { padding: 14px 18px; border-bottom: 1px solid var(--navy3); display: flex; align-items: center; justify-content: space-between; }
+  .modal-header h3 { font-size: 15px; font-weight: 700; }
+  .modal-close { background: none; border: none; color: var(--grey); font-size: 18px; cursor: pointer; }
+  .modal-close:hover { color: var(--white); }
+  .modal-body { padding: 16px 18px; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 12px 18px; border-top: 1px solid var(--navy3); display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* Import step2 */
+  #import-table-wrap { overflow-x: auto; max-height: 50vh; overflow-y: auto; }
+  #import-table-wrap table { border-collapse: collapse; }
+  #import-table-wrap th { cursor: pointer; user-select: none; transition: all 0.2s; }
+  #import-table-wrap td { border: 1px solid var(--navy3); padding: 4px 8px; font-size: 11px; white-space: nowrap; }
+
+  .role-btn { padding: 4px 11px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; transition: all 0.15s; white-space: nowrap; }
+
+  /* PROGRESS */
+  .progress-bar-wrap { height: 4px; background: var(--navy3); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; }
 
   /* TOAST */
-  #toast {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    background: var(--navy3);
-    color: var(--white);
-    border: 1px solid var(--gold);
-    border-radius: 8px;
-    padding: 12px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
-    z-index: 999;
-    pointer-events: none;
-  }
+  #toast { position: fixed; bottom: 20px; right: 20px; background: var(--navy3); color: var(--white); border: 1px solid var(--gold); border-radius: 8px; padding: 10px 18px; font-size: 12px; font-weight: 600; opacity: 0; transform: translateY(8px); transition: all 0.3s; z-index: 999; pointer-events: none; }
   #toast.show { opacity: 1; transform: translateY(0); }
   #toast.error { border-color: var(--red); color: #f08080; }
-
-  .comment-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--grey); font-size: 12px; }
 </style>
 </head>
 <body>
@@ -368,11 +160,10 @@
       <div class="header-sub">Polytech Lille · Département des langues</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;">
+  <div class="header-right">
+    <span class="author-tag">© M. Vasseur</span>
     <span id="save-status">Chargement…</span>
-    <button class="save-btn" id="save-btn" onclick="saveData()" disabled>
-      <span>💾</span> Sauvegarder
-    </button>
+    <button class="save-btn" id="save-btn" onclick="saveData()" disabled>💾 Sauvegarder</button>
   </div>
 </header>
 
@@ -382,44 +173,81 @@
   <div class="tab" onclick="switchTab('stats')">📊 Synthèse</div>
 </div>
 
-<!-- PLANNING TAB -->
+<!-- ══════ PLANNING ══════ -->
 <div class="page active" id="page-planning">
   <div class="section-title">Planning des jurys</div>
   <div class="planning-grid" id="planning-grid"></div>
+
   <div class="section-title">Modifier le planning</div>
   <div class="table-wrap">
     <table id="planning-table">
-      <thead>
-        <tr>
-          <th>Professeur</th>
-          <th>Département</th>
-          <th>Date</th>
-          <th>Heure</th>
-          <th>Salle</th>
-          <th></th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>Professeur</th><th>Département</th><th>Date</th><th>Heure</th><th>Salle</th><th></th>
+      </tr></thead>
       <tbody id="planning-tbody"></tbody>
     </table>
   </div>
+
   <div class="add-row-form">
-    <div class="form-field"><label>Professeur</label><input id="np-prof" placeholder="Ex: Sara"></div>
-    <div class="form-field"><label>Département</label><input id="np-dept" placeholder="Ex: MECA"></div>
-    <div class="form-field"><label>Date</label><input id="np-date" placeholder="Ex: 05/07"></div>
-    <div class="form-field"><label>Heure</label><input id="np-heure" placeholder="Ex: 9h00"></div>
-    <div class="form-field"><label>Salle</label><input id="np-salle" placeholder="Ex: A312"></div>
+    <div class="form-field">
+      <label>Professeur</label>
+      <select id="np-prof">
+        <option value="">— Choisir —</option>
+        <option>Marc</option><option>Beate</option><option>Sara</option>
+        <option>Pablo</option><option>Jean-Yves</option><option>Rose</option>
+        <option>Jean-Luc</option><option>Messaoud</option>
+        <option>Marie</option><option>Christelle</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Département</label>
+      <select id="np-dept">
+        <option value="">— Choisir —</option>
+        <option>2IA</option><option>MAT</option><option>MECA</option><option>SE</option>
+        <option>SE2A</option><option>GC</option><option>GC2A</option><option>GBA</option>
+        <option>PROD2A</option><option>IS</option><option>IS2A</option><option>2GU2A</option>
+        <option>M1GC</option><option>M1GM</option><option>M2</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Date</label>
+      <select id="np-date">
+        <option value="">—</option>
+        <option>25/06</option><option>26/06</option><option>27/06</option>
+        <option>30/06</option><option>01/07</option><option>02/07</option>
+        <option>03/07</option><option>04/07</option><option>05/07</option>
+        <option>07/07</option><option>08/07</option><option>09/07</option><option>10/07</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Heure</label>
+      <select id="np-heure">
+        <option value="">—</option>
+        <option>8h00</option><option>8h30</option><option>9h00</option><option>9h30</option>
+        <option>10h00</option><option>10h30</option><option>11h00</option><option>11h30</option>
+        <option>13h00</option><option>13h30</option><option>13h45</option><option>14h00</option>
+        <option>14h30</option><option>15h00</option><option>15h30</option><option>16h00</option>
+        <option>16h30</option>
+      </select>
+    </div>
+    <div class="form-field"><label>Salle</label><input id="np-salle" placeholder="Ex: A312" style="min-width:80px"></div>
     <button class="btn-add" onclick="addPlanning()">+ Ajouter</button>
   </div>
 </div>
 
-<!-- ETUDIANTS TAB -->
+<!-- ══════ ÉTUDIANTS ══════ -->
 <div class="page" id="page-etudiants">
   <div class="stats-bar" id="mini-stats"></div>
 
+  <div class="toolbar">
+    <button class="btn btn-danger" onclick="confirmClearAll()">🗑 Effacer tout</button>
+    <button class="btn btn-success" onclick="openImportModal()">📥 Importer XLS</button>
+  </div>
+
   <div class="filters">
-    <input class="search-input" id="search" placeholder="🔍 Rechercher un étudiant…" oninput="renderTable()">
+    <input class="search-input" id="search" placeholder="🔍 Rechercher…" oninput="renderTable()">
     <select class="filter-select" id="f-dept" onchange="renderTable()">
-      <option value="">Tous les depts</option>
+      <option value="">Tous depts</option>
     </select>
     <select class="filter-select" id="f-annee" onchange="renderTable()">
       <option value="">Toutes années</option>
@@ -427,43 +255,28 @@
     </select>
     <select class="filter-select" id="f-avis" onchange="renderTable()">
       <option value="">Tous avis</option>
-      <option>Redoublement</option>
-      <option>Réorientation</option>
-      <option>Epreuve complémentaire</option>
-      <option>Abandon</option>
-      <option>Décision Reportée</option>
-      <option>Année blanche</option>
-      <option>S6 blanc</option>
-      <option>S8 blanc</option>
+      <option>Redoublement</option><option>Réorientation</option>
+      <option>Epreuve complémentaire</option><option>Abandon</option>
+      <option>Décision Reportée</option><option>Année blanche</option>
+      <option>S6 blanc</option><option>S8 blanc</option>
     </select>
     <select class="filter-select" id="f-toeic" onchange="renderTable()">
       <option value="">TOEIC tous</option>
-      <option value="1">TOEIC ✓</option>
-      <option value="0">TOEIC ✗</option>
+      <option value="1">TOEIC ✓</option><option value="0">TOEIC ✗</option>
     </select>
     <select class="filter-select" id="f-traite" onchange="renderTable()">
       <option value="">Tous</option>
-      <option value="1">Traités</option>
-      <option value="0">Non traités</option>
+      <option value="1">Traités</option><option value="0">Non traités</option>
     </select>
   </div>
 
   <div class="table-wrap">
     <table>
-      <thead>
-        <tr>
-          <th>✓</th>
-          <th>Nom</th>
-          <th>Dept</th>
-          <th>An.</th>
-          <th>EC Langue</th>
-          <th>TOEIC</th>
-          <th>Avis jury</th>
-          <th>Redoublement</th>
-          <th>Commentaire</th>
-          <th></th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>✓</th><th>Nom</th><th>Dept</th><th>An.</th>
+        <th>EC Langue</th><th>TOEIC</th><th>Avis jury</th>
+        <th>Redoublement</th><th>Commentaire</th><th></th>
+      </tr></thead>
       <tbody id="etud-tbody"></tbody>
     </table>
   </div>
@@ -499,59 +312,136 @@
   </div>
 </div>
 
-<!-- STATS TAB -->
+<!-- ══════ STATS ══════ -->
 <div class="page" id="page-stats">
   <div class="stats-bar" id="global-stats"></div>
   <div id="dept-breakdown"></div>
+</div>
+
+<!-- ══════ MODAL IMPORT ══════ -->
+<div class="modal-overlay" id="modal-import">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📥 Import Excel / CSV</h3>
+      <button class="modal-close" onclick="closeImport()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- STEP 1 -->
+      <div id="import-step1">
+        <div class="form-field" style="margin-bottom:14px">
+          <label>Fichier (.xlsx .xls .csv)</label>
+          <input type="file" id="import-file" accept=".xlsx,.xls,.csv"
+            style="border:2px dashed var(--grey2);border-radius:8px;padding:16px;width:100%;background:var(--navy3);cursor:pointer;color:var(--white)"
+            onchange="handleImportFile(this)">
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div class="form-field" style="flex:1;min-width:160px">
+            <label>Feuille Excel</label>
+            <select id="import-sheet" onchange="loadSheetData()" style="background:var(--navy3);border:1px solid var(--grey2);color:var(--white);padding:6px;border-radius:6px"></select>
+          </div>
+          <div class="form-field" style="flex:1;min-width:160px">
+            <label>Département par défaut</label>
+            <select id="import-dept-default" style="background:var(--navy3);border:1px solid var(--grey2);color:var(--white);padding:6px;border-radius:6px">
+              <option value="">— Aucun —</option>
+              <option>2IA</option><option>MAT</option><option>MECA</option><option>SE</option>
+              <option>SE2A</option><option>GC</option><option>GC2A</option><option>GBA</option>
+              <option>PROD2A</option><option>IS</option><option>IS2A</option><option>2GU2A</option>
+              <option>M1GC</option><option>M1GM</option><option>M2</option>
+            </select>
+          </div>
+        </div>
+        <p id="import-file-info" style="font-size:11px;color:var(--grey);margin-top:8px"></p>
+      </div>
+      <!-- STEP 2 -->
+      <div id="import-step2" style="display:none">
+        <div id="import-role-bar" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:var(--navy3);border-radius:8px">
+          <span style="font-size:10px;color:var(--grey);white-space:nowrap">Champ actif :</span>
+          <div id="import-role-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+          <span id="import-role-hint" style="font-size:11px;color:var(--grey);margin-left:6px"></span>
+        </div>
+        <div id="import-table-wrap"></div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:10px;color:var(--grey)">Assignations :</span>
+          <div id="import-legend" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" onclick="closeImport()">Annuler</button>
+      <button class="btn" id="btn-import-back" style="display:none;background:var(--grey2);color:var(--white)" onclick="importBack()">← Retour</button>
+      <button class="btn btn-primary" id="btn-import-next" onclick="importNext()" disabled>Suivant →</button>
+      <button class="btn btn-gold" id="btn-import-confirm" style="display:none" onclick="confirmImport()">✓ Importer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL CONFIRM CLEAR ══════ -->
+<div class="modal-overlay" id="modal-clear">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header"><h3>⚠️ Effacer tous les étudiants</h3><button class="modal-close" onclick="closeClear()">✕</button></div>
+    <div class="modal-body" style="padding:20px">
+      <p style="color:var(--grey);font-size:13px">Cette action va supprimer <strong style="color:var(--red)" id="clear-count">?</strong> étudiants de la liste. Les données GitHub seront écrasées à la prochaine sauvegarde.</p>
+      <p style="margin-top:12px;font-size:12px;color:var(--grey2)">Pour confirmer, tapez <strong style="color:var(--white)">EFFACER</strong> ci-dessous :</p>
+      <input id="clear-confirm-input" style="margin-top:8px;width:100%;background:var(--navy3);border:1px solid var(--grey2);color:var(--white);padding:8px;border-radius:6px;font-size:13px" placeholder="EFFACER">
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--grey2);color:var(--white)" onclick="closeClear()">Annuler</button>
+      <button class="btn btn-danger" onclick="doClearAll()">🗑 Confirmer effacement</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
 const OWNER = 'marcvasseurpolytech-dot';
-const REPO = 'jury-ecole';
-const FILE = 'data.json';
-const TOKEN = ['ghp_N84HJ5URaf0UoiyNMYQNY6argi', '49qu4LJKbe'].join('');
+const REPO  = 'jury-ecole';
+const FILE  = 'data.json';
+const TOKEN = ['ghp_N84HJ5URaf0UoiyNMYQNY6argi','49qu4LJKbe'].join('');
 
 let data = { planning: [], etudiants: [] };
 let fileSha = null;
 let dirty = false;
-let filteredIndices = []; // indices in data.etudiants
 
-const AVIS_CONFIG = {
-  'Redoublement': 'badge-redoublement',
-  'Réorientation': 'badge-reorientation',
-  'Epreuve complémentaire': 'badge-ec',
-  'Abandon': 'badge-abandon',
-  'Décision Reportée': 'badge-reporte',
-  'Année blanche': 'badge-annee-blanche',
-  'S6 blanc': 'badge-redoublement',
-  'S8 blanc': 'badge-redoublement',
+const PROFS = ['Marc','Beate','Sara','Pablo','Jean-Yves','Rose','Jean-Luc','Messaoud','Marie','Christelle'];
+const DEPTS = ['2IA','MAT','MECA','SE','SE2A','GC','GC2A','GBA','PROD2A','IS','IS2A','2GU2A','M1GC','M1GM','M2'];
+const DATES = ['25/06','26/06','27/06','30/06','01/07','02/07','03/07','04/07','05/07','07/07','08/07','09/07','10/07'];
+const HEURES = ['8h00','8h30','9h00','9h30','10h00','10h30','11h00','11h30','13h00','13h30','13h45','14h00','14h30','15h00','15h30','16h00','16h30'];
+
+const AVIS_MAP = {
+  'Redoublement':'badge-redoublement',
+  'Réorientation':'badge-reorientation',
+  'Epreuve complémentaire':'badge-ec',
+  'Abandon':'badge-abandon',
+  'Décision Reportée':'badge-reporte',
+  'Année blanche':'badge-annee-blanche',
+  'S6 blanc':'badge-redoublement',
+  'S8 blanc':'badge-redoublement',
 };
+const AVIS_LIST = ['','Redoublement','Réorientation','Epreuve complémentaire','Abandon','Décision Reportée','Année blanche','S6 blanc','S8 blanc'];
 
-// ─── GITHUB ───────────────────────────────────────────────
+// ─── GITHUB ──────────────────────────────────────────────
 async function loadData() {
   try {
     const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`, {
       headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' }
     });
-    if (!res.ok) throw new Error('Fichier introuvable');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     fileSha = json.sha;
-    data = JSON.parse(atob(json.content.replace(/\n/g,'')));
-    document.getElementById('save-status').textContent = 'Données chargées ✓';
+    data = JSON.parse(atob(json.content.replace(/\n/g, '')));
+    setSaveStatus('Données chargées ✓');
     document.getElementById('save-btn').disabled = false;
   } catch(e) {
-    document.getElementById('save-status').textContent = 'Erreur chargement';
-    toast('Erreur de chargement: ' + e.message, true);
+    setSaveStatus('Erreur chargement');
+    toast('Erreur: ' + e.message, true);
   }
   renderAll();
 }
 
 async function saveData() {
   const btn = document.getElementById('save-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Sauvegarde…';
+  btn.disabled = true; btn.textContent = '⏳…';
   try {
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
     const body = { message: 'maj jury-ecole', content, sha: fileSha };
@@ -564,103 +454,94 @@ async function saveData() {
     const json = await res.json();
     fileSha = json.content.sha;
     dirty = false;
-    const now = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
-    document.getElementById('save-status').textContent = `Sauvegardé ${now}`;
+    const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    setSaveStatus(`Sauvegardé ${now}`);
     toast('Sauvegardé sur GitHub ✓');
-  } catch(e) {
-    toast('Erreur: ' + e.message, true);
-  }
-  btn.disabled = false;
-  btn.innerHTML = '<span>💾</span> Sauvegarder';
+  } catch(e) { toast('Erreur: ' + e.message, true); }
+  btn.disabled = false; btn.innerHTML = '💾 Sauvegarder';
 }
 
-function markDirty() {
-  dirty = true;
-  document.getElementById('save-status').textContent = 'Modifications non sauvegardées';
-}
+function setSaveStatus(msg) { document.getElementById('save-status').textContent = msg; }
+function markDirty() { dirty = true; setSaveStatus('● Non sauvegardé'); }
 
-// ─── TABS ─────────────────────────────────────────────────
+// ─── TABS ────────────────────────────────────────────────
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const tabs = ['planning','etudiants','stats'];
-  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabs[i]===name));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   if (name === 'stats') renderStats();
 }
 
-// ─── PLANNING ─────────────────────────────────────────────
+// ─── PLANNING ────────────────────────────────────────────
 function renderPlanning() {
-  // Cards
   const grid = document.getElementById('planning-grid');
-  grid.innerHTML = data.planning.map((p,i) => {
+  grid.innerHTML = data.planning.map(p => {
     const hasDate = p.date && p.date.trim();
     return `<div class="planning-card ${hasDate?'':'no-date'}">
-      <div class="dept-title">${p.departement||'—'}</div>
-      <div class="prof-name">👤 ${p.prof||'—'}</div>
-      <div class="planning-info">
-        <div class="planning-info-row"><span class="ico">📅</span> <span>${p.date||'À définir'}</span></div>
-        <div class="planning-info-row"><span class="ico">🕐</span> <span>${p.heure||'—'}</span></div>
-        <div class="planning-info-row"><span class="ico">📍</span> <span>${p.salle||'—'}</span></div>
-      </div>
+      <div class="dept-title">${esc(p.departement||'—')}</div>
+      <div class="prof-name">👤 ${esc(p.prof||'—')}</div>
+      <div class="planning-info-row">📅 <span>${p.date||'À définir'}</span></div>
+      <div class="planning-info-row">🕐 <span>${p.heure||'—'}</span></div>
+      <div class="planning-info-row">📍 <span>${esc(p.salle||'—')}</span></div>
     </div>`;
   }).join('');
 
-  // Edit table
+  const makeOpts = (vals, cur) => vals.map(v => `<option${cur===v?' selected':''}>${v}</option>`).join('');
+
   const tbody = document.getElementById('planning-tbody');
   tbody.innerHTML = data.planning.map((p,i) => `
     <tr>
-      <td><input class="editable" value="${esc(p.prof)}" onchange="data.planning[${i}].prof=this.value;markDirty();renderPlanning()"></td>
-      <td><input class="editable" value="${esc(p.departement)}" onchange="data.planning[${i}].departement=this.value;markDirty();renderPlanning()"></td>
-      <td><input class="editable" value="${esc(p.date)}" style="width:80px" onchange="data.planning[${i}].date=this.value;markDirty();renderPlanning()"></td>
-      <td><input class="editable" value="${esc(p.heure)}" style="width:70px" onchange="data.planning[${i}].heure=this.value;markDirty();renderPlanning()"></td>
-      <td><input class="editable" value="${esc(p.salle)}" style="width:80px" onchange="data.planning[${i}].salle=this.value;markDirty();renderPlanning()"></td>
+      <td><select class="editable" onchange="data.planning[${i}].prof=this.value;markDirty();renderPlanning()">
+        <option value="">${p.prof||'—'}</option>${makeOpts(PROFS, p.prof)}
+      </select></td>
+      <td><select class="editable" onchange="data.planning[${i}].departement=this.value;markDirty();renderPlanning()">
+        <option value="">${p.departement||'—'}</option>${makeOpts(DEPTS, p.departement)}
+      </select></td>
+      <td><select class="editable" onchange="data.planning[${i}].date=this.value;markDirty();renderPlanning()">
+        <option value="">${p.date||'—'}</option>${makeOpts(DATES, p.date)}
+      </select></td>
+      <td><select class="editable" onchange="data.planning[${i}].heure=this.value;markDirty();renderPlanning()">
+        <option value="">${p.heure||'—'}</option>${makeOpts(HEURES, p.heure)}
+      </select></td>
+      <td><input class="editable" value="${esc(p.salle||'')}" style="width:70px" onchange="data.planning[${i}].salle=this.value;markDirty()"></td>
       <td><button class="btn-del" onclick="deletePlanning(${i})">🗑</button></td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 function addPlanning() {
   const p = { prof: v('np-prof'), departement: v('np-dept'), date: v('np-date'), heure: v('np-heure'), salle: v('np-salle') };
   if (!p.prof && !p.departement) return;
   data.planning.push(p);
-  markDirty();
-  renderPlanning();
-  ['np-prof','np-dept','np-date','np-heure','np-salle'].forEach(id => document.getElementById(id).value='');
+  markDirty(); renderPlanning();
+  ['np-dept','np-date','np-heure','np-salle'].forEach(id => document.getElementById(id).value='');
 }
 
-function deletePlanning(i) {
-  data.planning.splice(i, 1);
-  markDirty();
-  renderPlanning();
-}
+function deletePlanning(i) { data.planning.splice(i,1); markDirty(); renderPlanning(); }
 
-// ─── ETUDIANTS ────────────────────────────────────────────
-function getUniqDepts() {
-  return [...new Set(data.etudiants.map(e=>e.dept))].sort();
-}
+// ─── ETUDIANTS ───────────────────────────────────────────
+function getUniqDepts() { return [...new Set(data.etudiants.map(e=>e.dept))].sort(); }
 
 function populateFilters() {
   const sel = document.getElementById('f-dept');
   const cur = sel.value;
-  sel.innerHTML = '<option value="">Tous les depts</option>';
+  sel.innerHTML = '<option value="">Tous depts</option>';
   getUniqDepts().forEach(d => {
     const o = document.createElement('option');
-    o.value = d; o.textContent = d;
-    if (d === cur) o.selected = true;
+    o.value = d; o.textContent = d; if (d===cur) o.selected=true;
     sel.appendChild(o);
   });
 }
 
 function renderTable() {
   const search = document.getElementById('search').value.toLowerCase();
-  const fDept = document.getElementById('f-dept').value;
-  const fAnnee = document.getElementById('f-annee').value;
-  const fAvis = document.getElementById('f-avis').value;
-  const fToeic = document.getElementById('f-toeic').value;
+  const fDept   = document.getElementById('f-dept').value;
+  const fAnnee  = document.getElementById('f-annee').value;
+  const fAvis   = document.getElementById('f-avis').value;
+  const fToeic  = document.getElementById('f-toeic').value;
   const fTraite = document.getElementById('f-traite').value;
 
-  filteredIndices = data.etudiants.map((e,i) => i).filter(i => {
+  const indices = data.etudiants.map((_,i)=>i).filter(i => {
     const e = data.etudiants[i];
     if (search && !e.nom.toLowerCase().includes(search)) return false;
     if (fDept && e.dept !== fDept) return false;
@@ -668,35 +549,26 @@ function renderTable() {
     if (fAvis && e.avis !== fAvis) return false;
     if (fToeic !== '' && String(e.ec_toeic) !== fToeic) return false;
     if (fTraite !== '') {
-      if (fTraite === '1' && !e.traite) return false;
-      if (fTraite === '0' && e.traite) return false;
+      if (fTraite==='1' && !e.traite) return false;
+      if (fTraite==='0' && e.traite) return false;
     }
     return true;
   });
 
-  const avisOpts = ['','Redoublement','Réorientation','Epreuve complémentaire','Abandon','Décision Reportée','Année blanche','S6 blanc','S8 blanc'];
-
   const tbody = document.getElementById('etud-tbody');
-  tbody.innerHTML = filteredIndices.map(i => {
+  tbody.innerHTML = indices.map(i => {
     const e = data.etudiants[i];
-    const avisClass = AVIS_CONFIG[e.avis] || 'badge-vide';
-    const avisSelectOpts = avisOpts.map(a => `<option value="${a}" ${e.avis===a?'selected':''}>${a||'—'}</option>`).join('');
-    return `<tr style="${e.traite?'opacity:0.5':''}">
+    const avisOpts = AVIS_LIST.map(a => `<option value="${a}"${e.avis===a?' selected':''}>${a||'—'}</option>`).join('');
+    return `<tr style="${e.traite?'opacity:0.45':''}">
       <td><input type="checkbox" class="traite-check" ${e.traite?'checked':''} onchange="data.etudiants[${i}].traite=this.checked;markDirty();renderTable()"></td>
       <td style="font-weight:600;white-space:nowrap">${esc(e.nom)}</td>
       <td><span style="color:var(--gold);font-weight:700">${esc(e.dept)}</span></td>
       <td>${esc(e.annee)}</td>
-      <td style="font-size:12px;color:var(--grey)">${esc(e.ec_langue||'')}</td>
-      <td><span class="toeic-dot ${e.ec_toeic?'dot-ok':'dot-ko'}"></span>${e.ec_toeic?'<span style="color:var(--green);font-size:12px">Validé</span>':'<span style="color:var(--grey2);font-size:12px">Non</span>'}</td>
-      <td>
-        <select class="editable" style="min-width:150px" onchange="data.etudiants[${i}].avis=this.value;markDirty();renderTable()">
-          ${avisSelectOpts}
-        </select>
-      </td>
-      <td><input class="editable" value="${esc(e.redoublement||'')}" style="min-width:100px" onchange="data.etudiants[${i}].redoublement=this.value;markDirty()"></td>
-      <td class="comment-cell" title="${esc(e.commentaire||'')}">
-        <input class="editable" value="${esc(e.commentaire||'')}" style="min-width:160px" onchange="data.etudiants[${i}].commentaire=this.value;markDirty()">
-      </td>
+      <td style="font-size:11px;color:var(--grey)">${esc(e.ec_langue||'')}</td>
+      <td><span class="toeic-dot ${e.ec_toeic?'dot-ok':'dot-ko'}"></span>${e.ec_toeic?'<span style="color:var(--green);font-size:11px">Validé</span>':'<span style="color:var(--grey2);font-size:11px">Non</span>'}</td>
+      <td><select class="editable" style="min-width:140px" onchange="data.etudiants[${i}].avis=this.value;markDirty();renderTable()">${avisOpts}</select></td>
+      <td><input class="editable" value="${esc(e.redoublement||'')}" style="min-width:90px" onchange="data.etudiants[${i}].redoublement=this.value;markDirty()"></td>
+      <td><input class="editable" value="${esc(e.commentaire||'')}" style="min-width:160px" onchange="data.etudiants[${i}].commentaire=this.value;markDirty()" title="${esc(e.commentaire||'')}"></td>
       <td><button class="btn-del" onclick="deleteEtudiant(${i})">🗑</button></td>
     </tr>`;
   }).join('');
@@ -705,18 +577,11 @@ function renderTable() {
 }
 
 function addEtudiant() {
-  const e = {
-    traite: false,
-    nom: v('ne-nom'), dept: v('ne-dept'), annee: v('ne-annee'),
-    ec_langue: v('ne-eclangue'), ec_langue_val: 0,
-    ec_toeic: parseInt(v('ne-toeic')), avis: v('ne-avis'),
-    redoublement: '', commentaire: v('ne-comment')
-  };
+  const e = { traite:false, nom:v('ne-nom'), dept:v('ne-dept'), annee:v('ne-annee'),
+    ec_langue:v('ne-eclangue'), ec_langue_val:0, ec_toeic:parseInt(v('ne-toeic')),
+    avis:v('ne-avis'), redoublement:'', commentaire:v('ne-comment') };
   if (!e.nom) return;
-  data.etudiants.push(e);
-  markDirty();
-  populateFilters();
-  renderTable();
+  data.etudiants.push(e); markDirty(); populateFilters(); renderTable();
   document.getElementById('ne-nom').value='';
   document.getElementById('ne-eclangue').value='';
   document.getElementById('ne-comment').value='';
@@ -724,90 +589,279 @@ function addEtudiant() {
 
 function deleteEtudiant(i) {
   if (!confirm(`Supprimer ${data.etudiants[i].nom} ?`)) return;
-  data.etudiants.splice(i, 1);
-  markDirty();
-  populateFilters();
-  renderTable();
+  data.etudiants.splice(i,1); markDirty(); populateFilters(); renderTable();
 }
 
 function renderMiniStats() {
-  const total = data.etudiants.length;
-  const traites = data.etudiants.filter(e=>e.traite).length;
-  const toeic = data.etudiants.filter(e=>e.ec_toeic).length;
-  const rdbl = data.etudiants.filter(e=>e.avis==='Redoublement').length;
-  const reor = data.etudiants.filter(e=>e.avis==='Réorientation').length;
+  const n = data.etudiants.length;
+  const t = data.etudiants.filter(e=>e.ec_toeic).length;
+  const r = data.etudiants.filter(e=>e.avis==='Redoublement').length;
+  const o = data.etudiants.filter(e=>e.avis==='Réorientation').length;
   const ec = data.etudiants.filter(e=>e.avis==='Epreuve complémentaire').length;
-
+  const tr = data.etudiants.filter(e=>e.traite).length;
   document.getElementById('mini-stats').innerHTML = `
-    <div class="stat-card"><div class="val">${total}</div><div class="lbl">Étudiants</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--green)">${toeic}</div><div class="lbl">TOEIC validé</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--red)">${rdbl}</div><div class="lbl">Redoublement</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--purple)">${reor}</div><div class="lbl">Réorientation</div></div>
+    <div class="stat-card"><div class="val">${n}</div><div class="lbl">Étudiants</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--green)">${t}</div><div class="lbl">TOEIC ✓</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--red)">${r}</div><div class="lbl">Redoublement</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--purple)">${o}</div><div class="lbl">Réorientation</div></div>
     <div class="stat-card"><div class="val" style="color:var(--orange)">${ec}</div><div class="lbl">Épreuve compl.</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--grey)">${traites}/${total}</div><div class="lbl">Traités</div></div>
-  `;
+    <div class="stat-card"><div class="val" style="color:var(--grey)">${tr}/${n}</div><div class="lbl">Traités</div></div>`;
 }
 
-// ─── STATS ────────────────────────────────────────────────
+// ─── CLEAR ALL ───────────────────────────────────────────
+function confirmClearAll() {
+  document.getElementById('clear-count').textContent = data.etudiants.length;
+  document.getElementById('clear-confirm-input').value = '';
+  document.getElementById('modal-clear').classList.add('open');
+}
+function closeClear() { document.getElementById('modal-clear').classList.remove('open'); }
+function doClearAll() {
+  if (document.getElementById('clear-confirm-input').value.trim() !== 'EFFACER') {
+    toast('Tapez exactement EFFACER pour confirmer', true); return;
+  }
+  data.etudiants = [];
+  markDirty(); closeClear(); populateFilters(); renderTable();
+  toast('Liste vidée — pensez à sauvegarder');
+}
+
+// ─── STATS ───────────────────────────────────────────────
 function renderStats() {
   const depts = getUniqDepts();
-  const total = data.etudiants.length;
-  const toeic = data.etudiants.filter(e=>e.ec_toeic).length;
-  const rdbl = data.etudiants.filter(e=>e.avis==='Redoublement').length;
-  const reor = data.etudiants.filter(e=>e.avis==='Réorientation').length;
+  const n = data.etudiants.length;
+  const t = data.etudiants.filter(e=>e.ec_toeic).length;
+  const r = data.etudiants.filter(e=>e.avis==='Redoublement').length;
+  const o = data.etudiants.filter(e=>e.avis==='Réorientation').length;
   const ec = data.etudiants.filter(e=>e.avis==='Epreuve complémentaire').length;
   const ab = data.etudiants.filter(e=>e.avis==='Abandon').length;
 
   document.getElementById('global-stats').innerHTML = `
-    <div class="stat-card"><div class="val">${total}</div><div class="lbl">Total</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--green)">${toeic} <span style="font-size:14px;color:var(--grey)">(${Math.round(toeic/total*100)}%)</span></div><div class="lbl">TOEIC validé</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--red)">${rdbl}</div><div class="lbl">Redoublement</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--purple)">${reor}</div><div class="lbl">Réorientation</div></div>
+    <div class="stat-card"><div class="val">${n}</div><div class="lbl">Total</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--green)">${t} <span style="font-size:12px;color:var(--grey)">(${n?Math.round(t/n*100):0}%)</span></div><div class="lbl">TOEIC ✓</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--red)">${r}</div><div class="lbl">Redoublement</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--purple)">${o}</div><div class="lbl">Réorientation</div></div>
     <div class="stat-card"><div class="val" style="color:var(--orange)">${ec}</div><div class="lbl">Épreuve compl.</div></div>
-    <div class="stat-card"><div class="val" style="color:var(--grey)">${ab}</div><div class="lbl">Abandon</div></div>
-  `;
+    <div class="stat-card"><div class="val" style="color:var(--grey)">${ab}</div><div class="lbl">Abandon</div></div>`;
 
-  const breakdown = depts.map(dept => {
-    const etds = data.etudiants.filter(e=>e.dept===dept);
-    const n = etds.length;
-    const t = etds.filter(e=>e.ec_toeic).length;
-    const pct = n>0 ? Math.round(t/n*100) : 0;
+  const rows = depts.map(dept => {
+    const es = data.etudiants.filter(e=>e.dept===dept);
+    const dn = es.length;
+    const dt = es.filter(e=>e.ec_toeic).length;
+    const pct = dn ? Math.round(dt/dn*100) : 0;
     const byAvis = {};
-    etds.forEach(e => { if(e.avis) byAvis[e.avis] = (byAvis[e.avis]||0)+1; });
-    const pills = Object.entries(byAvis).map(([k,v]) =>
-      `<span class="badge ${AVIS_CONFIG[k]||'badge-vide'}">${k} (${v})</span>`
-    ).join(' ');
-
-    // planning info
-    const plan = data.planning.find(p => p.departement === dept);
-    const planInfo = plan ? `${plan.date||'?'} ${plan.heure||''} — ${plan.salle||'?'} (${plan.prof||'?'})` : '—';
-
-    return `
-      <div class="stat-card" style="flex:none;width:100%;margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
-          <div>
-            <span style="font-size:18px;font-weight:800;color:var(--gold)">${dept}</span>
-            <span style="color:var(--grey);font-size:12px;margin-left:10px">${n} étudiant${n>1?'s':''}</span>
-          </div>
-          <div style="font-size:12px;color:var(--grey)">📅 ${planInfo}</div>
-        </div>
-        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
-        <div style="font-size:12px;color:var(--grey);margin-top:4px">TOEIC : ${t}/${n} (${pct}%)</div>
-        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:5px">${pills||'<span style="color:var(--grey);font-size:12px">Aucun avis renseigné</span>'}</div>
-      </div>`;
+    es.forEach(e=>{ if(e.avis) byAvis[e.avis]=(byAvis[e.avis]||0)+1; });
+    const pills = Object.entries(byAvis).map(([k,v])=>`<span class="badge ${AVIS_MAP[k]||''}">${k} (${v})</span>`).join(' ');
+    const plan = data.planning.find(p=>p.departement===dept);
+    const planInfo = plan ? `${plan.date||'?'} ${plan.heure||''} — ${plan.salle||'?'} (${plan.prof||'?'})` : 'Non planifié';
+    return `<div class="stat-card" style="flex:none;width:100%;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
+        <span style="font-size:17px;font-weight:800;color:var(--gold)">${dept}</span>
+        <span style="font-size:11px;color:var(--grey)">📅 ${planInfo}</span>
+      </div>
+      <div style="font-size:11px;color:var(--grey);margin-top:2px">${dn} étudiant${dn>1?'s':''}</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+      <div style="font-size:11px;color:var(--grey);margin-top:3px">TOEIC : ${dt}/${dn} (${pct}%)</div>
+      <div style="margin-top:7px;display:flex;flex-wrap:wrap;gap:4px">${pills||'<span style="font-size:11px;color:var(--grey2)">—</span>'}</div>
+    </div>`;
   }).join('');
-
-  document.getElementById('dept-breakdown').innerHTML = `<div class="section-title">Par département</div><div>${breakdown}</div>`;
+  document.getElementById('dept-breakdown').innerHTML = `<div class="section-title">Par département</div>${rows}`;
 }
 
-// ─── HELPERS ──────────────────────────────────────────────
-function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// ─── IMPORT XLS ──────────────────────────────────────────
+let importWorkbook = null;
+let importRows = [];
+let importColRoles = {};
+let activeRole = null;
+
+const ROLES = [
+  { key:'nom',    label:'NOM',       color:'#2980b9', text:'#fff' },
+  { key:'prenom', label:'Prénom',    color:'#3498db', text:'#fff' },
+  { key:'dept',   label:'Dept',      color:'#c9a227', text:'#0a1628' },
+  { key:'annee',  label:'Année',     color:'#8e44ad', text:'#fff' },
+  { key:'toeic',  label:'TOEIC',     color:'#27ae60', text:'#fff' },
+  { key:'avis',   label:'Avis jury', color:'#e05252', text:'#fff' },
+  { key:'comment',label:'Commentaire',color:'#4a5a78',text:'#fff' },
+];
+
+function openImportModal() {
+  importWorkbook=null; importRows=[]; importColRoles={}; activeRole=null;
+  document.getElementById('import-file').value='';
+  document.getElementById('import-file-info').textContent='';
+  document.getElementById('import-sheet').innerHTML='<option>—</option>';
+  document.getElementById('import-step1').style.display='';
+  document.getElementById('import-step2').style.display='none';
+  document.getElementById('btn-import-next').style.display='';
+  document.getElementById('btn-import-back').style.display='none';
+  document.getElementById('btn-import-confirm').style.display='none';
+  document.getElementById('btn-import-next').disabled=true;
+  document.getElementById('modal-import').classList.add('open');
+}
+
+function closeImport() { document.getElementById('modal-import').classList.remove('open'); }
+
+function handleImportFile(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const arrData = new Uint8Array(e.target.result);
+    importWorkbook = XLSX.read(arrData, {type:'array'});
+    const sel = document.getElementById('import-sheet');
+    sel.innerHTML = importWorkbook.SheetNames.map((s,i)=>`<option value="${i}">${s}</option>`).join('');
+    loadSheetData();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function loadSheetData() {
+  if (!importWorkbook) return;
+  const idx = parseInt(document.getElementById('import-sheet').value)||0;
+  const sheet = importWorkbook.Sheets[importWorkbook.SheetNames[idx]];
+  importRows = XLSX.utils.sheet_to_json(sheet, {defval:''});
+  const info = document.getElementById('import-file-info');
+  if (!importRows.length) { info.textContent='Aucune ligne détectée'; document.getElementById('btn-import-next').disabled=true; return; }
+  info.textContent = `${importRows.length} lignes — ${Object.keys(importRows[0]).length} colonnes`;
+  document.getElementById('btn-import-next').disabled = false;
+  // Auto-detect columns
+  importColRoles = {};
+  const cols = Object.keys(importRows[0]);
+  const autoMap = {
+    nom:    ['nom','name','last','famille','etudiant'],
+    prenom: ['prenom','first','given','prénom'],
+    dept:   ['dept','departement','filiere','formation','spécialité'],
+    annee:  ['annee','promo','year','niveau'],
+    toeic:  ['toeic'],
+    avis:   ['avis','decision','jury'],
+    comment:['comment','remarque','observation','note'],
+  };
+  const used = new Set();
+  cols.forEach(col => {
+    const low = col.toLowerCase();
+    const found = Object.keys(autoMap).find(role =>
+      !used.has(role) && autoMap[role].some(k=>low.includes(k))
+    );
+    if (found) { importColRoles[col]=found; used.add(found); }
+  });
+}
+
+function importNext() {
+  if (!importRows.length) return;
+  document.getElementById('import-step1').style.display='none';
+  document.getElementById('import-step2').style.display='';
+  document.getElementById('btn-import-next').style.display='none';
+  document.getElementById('btn-import-back').style.display='';
+  document.getElementById('btn-import-confirm').style.display='';
+  activeRole = null;
+  renderRoleBar(); renderImportTable();
+}
+
+function importBack() {
+  document.getElementById('import-step1').style.display='';
+  document.getElementById('import-step2').style.display='none';
+  document.getElementById('btn-import-next').style.display='';
+  document.getElementById('btn-import-back').style.display='none';
+  document.getElementById('btn-import-confirm').style.display='none';
+}
+
+function setActiveRole(key) {
+  activeRole = (activeRole===key) ? null : key;
+  renderRoleBar(); renderImportTable();
+}
+
+function assignColToActiveRole(colidx) {
+  if (!activeRole) return;
+  const cols = Object.keys(importRows[0]||{});
+  const col = cols[parseInt(colidx)];
+  if (!col) return;
+  Object.keys(importColRoles).forEach(c=>{ if(importColRoles[c]===activeRole) delete importColRoles[c]; });
+  importColRoles[col] = activeRole;
+  const next = ROLES.find(r => r.key!==activeRole && !Object.values(importColRoles).includes(r.key));
+  activeRole = next ? next.key : null;
+  renderRoleBar(); renderImportTable();
+}
+
+function renderRoleBar() {
+  const btns = document.getElementById('import-role-btns');
+  const hint = document.getElementById('import-role-hint');
+  btns.innerHTML = ROLES.map(r => {
+    const assigned = Object.keys(importColRoles).find(c=>importColRoles[c]===r.key);
+    const isActive = activeRole===r.key;
+    const border = isActive ? '3px solid #fff' : '2px solid rgba(255,255,255,.25)';
+    const op = (!activeRole||isActive) ? '1' : '0.55';
+    return `<button class="role-btn" onclick="setActiveRole('${r.key}')" style="background:${r.color};color:${r.text};border:${border};opacity:${op}">${r.label}${assigned?' ✓':''}</button>`;
+  }).join('');
+  if (activeRole) {
+    const r = ROLES.find(x=>x.key===activeRole);
+    hint.textContent = `Cliquez sur la colonne "${r.label}"`;
+    hint.style.color = r.color;
+  } else {
+    hint.textContent = 'Sélectionnez un champ puis cliquez sur la colonne';
+    hint.style.color = 'var(--grey)';
+  }
+}
+
+function renderImportTable() {
+  const cols = Object.keys(importRows[0]||{});
+  const preview = importRows.slice(0,8);
+  const headerCells = cols.map((col,i) => {
+    const role = importColRoles[col]||null;
+    const meta = role ? ROLES.find(r=>r.key===role) : null;
+    const isActive = activeRole !== null;
+    const bg = meta ? meta.color : 'var(--navy3)';
+    const txt = meta ? meta.text : 'var(--grey)';
+    const ring = isActive ? 'outline:2px solid var(--gold);outline-offset:2px;' : '';
+    const badge = meta ? `<span style="display:block;font-size:9px;margin-top:2px;opacity:.85">${meta.label}</span>` : (isActive?'<span style="display:block;font-size:9px;margin-top:2px;opacity:.5">→ cliquer</span>':'');
+    return `<th data-colidx="${i}" onclick="assignColToActiveRole(this.dataset.colidx)"
+      style="background:${bg};color:${txt};padding:7px 10px;cursor:pointer;white-space:nowrap;border:1px solid rgba(255,255,255,.1);${ring}text-align:center;min-width:80px">
+      <span style="font-size:11px;font-weight:700">${col}</span>${badge}</th>`;
+  }).join('');
+  const dataRows = preview.map((row,ri) => {
+    const cells = cols.map(col => {
+      const role = importColRoles[col]||null;
+      const meta = role ? ROLES.find(r=>r.key===role) : null;
+      const bg = meta ? meta.color+'18' : 'transparent';
+      return `<td style="border:1px solid var(--navy3);padding:4px 8px;background:${bg};font-size:11px;white-space:nowrap;color:var(--white)">${esc(String(row[col]||''))}</td>`;
+    }).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+  document.getElementById('import-table-wrap').innerHTML =
+    `<table style="border-collapse:collapse;width:100%"><thead><tr>${headerCells}</tr></thead><tbody>${dataRows}</tbody></table>`;
+}
+
+function confirmImport() {
+  const deptDefault = document.getElementById('import-dept-default').value;
+  let added = 0;
+  importRows.forEach(row => {
+    const get = key => {
+      const col = Object.keys(importColRoles).find(c=>importColRoles[c]===key);
+      return col ? String(row[col]||'').trim() : '';
+    };
+    const nom = (get('nom') + ' ' + get('prenom')).trim();
+    if (!nom) return;
+    const toeicRaw = get('toeic').toLowerCase();
+    const ec_toeic = ['1','oui','yes','true','validé','valide','ok'].includes(toeicRaw) ? 1 : 0;
+    const e = {
+      traite: false,
+      nom,
+      dept: get('dept') || deptDefault || '',
+      annee: get('annee') || '3A',
+      ec_langue: '', ec_langue_val: 0,
+      ec_toeic,
+      avis: get('avis') || '',
+      redoublement: '',
+      commentaire: get('comment') || '',
+    };
+    data.etudiants.push(e); added++;
+  });
+  markDirty(); closeImport(); populateFilters(); renderTable();
+  toast(`${added} étudiant${added>1?'s':''} importé${added>1?'s':''}`);
+}
+
+// ─── HELPERS ─────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function v(id) { return document.getElementById(id).value.trim(); }
 function toast(msg, err=false) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show' + (err?' error':'');
-  setTimeout(() => t.className = '', 3000);
+  t.textContent = msg; t.className = 'show' + (err?' error':'');
+  setTimeout(()=>t.className='', 3000);
 }
 
 function renderAll() {
