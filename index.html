@@ -108,10 +108,26 @@
   .planning-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 20px; }
   .planning-card { background: var(--navy2); border: 1px solid var(--navy3); border-left: 4px solid var(--gold); border-radius: 10px; padding: 14px; }
   .planning-card.no-date { border-left-color: var(--grey2); opacity: 0.65; }
+  .planning-card.no-prof { border-left-color: var(--red); }
   .planning-card .dept-title { font-size: 17px; font-weight: 800; color: var(--gold); margin-bottom: 4px; }
   .planning-card .prof-name { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 8px; }
   .planning-info-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--grey); margin-bottom: 3px; }
   .planning-info-row span { color: var(--white); font-weight: 600; }
+  .no-prof-banner {
+    background: linear-gradient(90deg, #e05252, #ff7070, #e05252);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s infinite linear;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
   /* ADD FORM — flottant en bas */
   .add-row-form {
@@ -560,9 +576,11 @@ function renderPlanning() {
   grid.innerHTML = sortedIdx.map(idx => {
     const p = data.planning[idx];
     const hasDate = p.date && p.date.trim();
-    return `<div class="planning-card ${hasDate?'':'no-date'}">
+    const noProf = !p.prof || !p.prof.trim();
+    return `<div class="planning-card ${hasDate?'':'no-date'} ${noProf?'no-prof':''}">
       <div class="dept-title">${esc(p.departement||'—')}</div>
-      <div class="prof-name">👤 ${esc(p.prof||'—')}</div>
+      ${noProf ? '<div class="no-prof-banner">⚠ Responsable manquant</div>' : ''}
+      <div class="prof-name">👤 ${noProf ? '<span style="color:var(--red);font-style:italic">Non assigné</span>' : esc(p.prof)}</div>
       <div class="planning-info-row">📅 <span>${p.date||'À définir'}</span></div>
       <div class="planning-info-row">🕐 <span>${p.heure||'—'}</span></div>
       <div class="planning-info-row">📍 <span>${esc(p.salle||'—')}</span></div>
