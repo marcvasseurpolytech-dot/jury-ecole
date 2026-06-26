@@ -255,24 +255,11 @@
     </div>
     <div class="form-field">
       <label>Date</label>
-      <select id="np-date">
-        <option value="">—</option>
-        <option>25/06</option><option>26/06</option><option>27/06</option>
-        <option>30/06</option><option>01/07</option><option>02/07</option>
-        <option>03/07</option><option>04/07</option><option>05/07</option>
-        <option>07/07</option><option>08/07</option><option>09/07</option><option>10/07</option>
-      </select>
+      <input id="np-date" placeholder="ex: 27/06" style="min-width:80px">
     </div>
     <div class="form-field">
       <label>Heure</label>
-      <select id="np-heure">
-        <option value="">—</option>
-        <option>8h00</option><option>8h30</option><option>9h00</option><option>9h30</option>
-        <option>10h00</option><option>10h30</option><option>11h00</option><option>11h30</option>
-        <option>13h00</option><option>13h30</option><option>13h45</option><option>14h00</option>
-        <option>14h30</option><option>15h00</option><option>15h30</option><option>16h00</option>
-        <option>16h30</option>
-      </select>
+      <input id="np-heure" placeholder="ex: 9h00" style="min-width:80px">
     </div>
     <div class="form-field"><label>Salle</label><input id="np-salle" placeholder="Ex: A312" style="min-width:80px"></div>
     <button class="btn-add" onclick="addPlanning()">+ Ajouter</button>
@@ -451,8 +438,6 @@ let dirty = false;
 
 const PROFS = ['Marc','Beate','Sara','Pablo','Jean-Yves','Rose','Messaoud','Marie','Christelle'];
 const DEPTS = ['2IA','MAT','MECA','SE','SE2A','GC','GC2A','GBA','PROD2A','IS','IS2A','2GU2A','M1GC','M1GM','M2'];
-const DATES = ['25/06','26/06','27/06','30/06','01/07','02/07','03/07','04/07','05/07','07/07','08/07','09/07','10/07'];
-const HEURES = ['8h00','8h30','9h00','9h30','10h00','10h30','11h00','11h30','13h00','13h30','13h45','14h00','14h30','15h00','15h30','16h00','16h30'];
 
 const AVIS_MAP = {
   'Redoublement':'badge-redoublement',
@@ -554,13 +539,21 @@ function syncQuickSearch(val) {
 
 // ─── PLANNING ────────────────────────────────────────────
 function renderPlanning() {
-  const DATE_ORDER = ['25/06','26/06','27/06','28/06','29/06','30/06',
-    '01/07','02/07','03/07','04/07','05/07','06/07','07/07','08/07','09/07','10/07'];
+  // Tri : convertir JJ/MM en valeur numérique pour ordre chronologique
+  function dateVal(d) {
+    if (!d) return 9999;
+    const m = d.match(/^(\d{1,2})\/(\d{1,2})$/);
+    return m ? parseInt(m[2])*100 + parseInt(m[1]) : 9999;
+  }
+  function heureVal(h) {
+    if (!h) return 9999;
+    const m = h.replace('h',':').match(/^(\d{1,2}):(\d{0,2})$/);
+    return m ? parseInt(m[1])*60 + parseInt(m[2]||0) : 9999;
+  }
   const sortedIdx = data.planning.map((_,i)=>i).sort((a,b) => {
-    const da = DATE_ORDER.indexOf(data.planning[a].date);
-    const db = DATE_ORDER.indexOf(data.planning[b].date);
-    if (da !== db) return (da<0?99:da) - (db<0?99:db);
-    return (data.planning[a].heure||'').localeCompare(data.planning[b].heure||'');
+    const dd = dateVal(data.planning[a].date) - dateVal(data.planning[b].date);
+    if (dd !== 0) return dd;
+    return heureVal(data.planning[a].heure) - heureVal(data.planning[b].heure);
   });
 
   const grid = document.getElementById('planning-grid');
@@ -591,12 +584,8 @@ function renderPlanning() {
       <td><select class="editable" onchange="data.planning[${i}].departement=this.value;markDirty(true);renderPlanning()">
         ${makeOpts(DEPTS, p.departement)}
       </select></td>
-      <td><select class="editable" onchange="data.planning[${i}].date=this.value;markDirty(true);renderPlanning()">
-        ${makeOpts(DATES, p.date)}
-      </select></td>
-      <td><select class="editable" onchange="data.planning[${i}].heure=this.value;markDirty(true);renderPlanning()">
-        ${makeOpts(HEURES, p.heure)}
-      </select></td>
+      <td><input class="editable" value="${esc(p.date||'')}" style="width:65px" placeholder="JJ/MM" onchange="data.planning[${i}].date=this.value;markDirty(true);renderPlanning()"></td>
+      <td><input class="editable" value="${esc(p.heure||'')}" style="width:60px" placeholder="9h00" onchange="data.planning[${i}].heure=this.value;markDirty(true);renderPlanning()"></td>
       <td><input class="editable" value="${esc(p.salle||'')}" style="width:70px" onchange="data.planning[${i}].salle=this.value;markDirty()"></td>
       <td><button class="btn-del" onclick="deletePlanning(${i})">🗑</button></td>
     </tr>`;}).join('');
@@ -1195,12 +1184,19 @@ function confirmImport() {
 function exportPlanningPDF() {
   if (!data.planning.length) { toast('Aucun planning a exporter', true); return; }
 
-  const dateOrder = ['25/06','26/06','27/06','28/06','29/06','30/06',
-    '01/07','02/07','03/07','04/07','05/07','06/07','07/07','08/07','09/07','10/07'];
+  function dateVal(d) {
+    if (!d) return 9999;
+    const m = d.match(/^(\d{1,2})\/(\d{1,2})$/);
+    return m ? parseInt(m[2])*100 + parseInt(m[1]) : 9999;
+  }
+  function heureVal(h) {
+    if (!h) return 9999;
+    const m = h.replace('h',':').match(/^(\d{1,2}):(\d{0,2})$/);
+    return m ? parseInt(m[1])*60 + parseInt(m[2]||0) : 9999;
+  }
   const sorted = [...data.planning].sort((a,b) => {
-    const da = dateOrder.indexOf(a.date), db = dateOrder.indexOf(b.date);
-    if (da !== db) return (da<0?99:da) - (db<0?99:db);
-    return (a.heure||'').localeCompare(b.heure||'');
+    const dd = dateVal(a.date) - dateVal(b.date);
+    return dd !== 0 ? dd : heureVal(a.heure) - heureVal(b.heure);
   });
 
   const { jsPDF } = window.jspdf;
