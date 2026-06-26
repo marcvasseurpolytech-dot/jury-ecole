@@ -773,7 +773,8 @@ function renderStats() {
     '<span style="font-size:11px;color:var(--grey);font-weight:700;text-transform:uppercase;letter-spacing:.06em;align-self:center">Exports XLS</span>' +
     '<button class="btn btn-gold" onclick="exportEC(\'toeic\')">&#128228; EC TOEIC</button>' +
     '<button class="btn" style="background:rgba(74,144,217,.25);color:#88b8f0;border:1px solid rgba(74,144,217,.4)" onclick="exportEC(\'lv1\')">&#128228; EC Langue LV1</button>' +
-    '<button class="btn" style="background:rgba(155,89,182,.25);color:#c39bd3;border:1px solid rgba(155,89,182,.4)" onclick="exportEC(\'lv2\')">&#128228; EC Langue LV2</button>';
+    '<button class="btn" style="background:rgba(155,89,182,.25);color:#c39bd3;border:1px solid rgba(155,89,182,.4)" onclick="exportEC(\'lv2\')">&#128228; EC Langue LV2</button>' +
+    '<button class="btn" style="background:rgba(224,82,82,.25);color:#f08080;border:1px solid rgba(224,82,82,.4)" onclick="exportEC(\'quittent\')">&#128228; Quittent Polytech</button>';
 
   // ── Ordre des types de rattrapage ──
   const TYPE_ORDER = [
@@ -989,6 +990,14 @@ function exportEC(type) {
       .sort((a,b) => a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
       .map(e => [e.nom, e.dept, e.annee, e.avis||'', e.redoublement||'', e.commentaire||'']);
     filename = 'EC_Langue_LV2.xlsx';
+  } else if (type === 'quittent') {
+    rows = data.etudiants
+      .filter(e => ['Réorientation','Abandon','Année blanche'].includes(e.avis))
+      .sort((a,b) => a.avis.localeCompare(b.avis) || a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
+      .map(e => [e.nom, e.dept, e.annee, e.avis||'', e.commentaire||'']);
+    const hq = ['Nom', 'Département', 'Année', 'Motif', 'Commentaire'];
+    _writeXLS([hq, ...rows], 'Quittent_Polytech.xlsx');
+    return;
   }
 
   _writeXLS([header, ...rows], filename);
