@@ -6,6 +6,13 @@
       "date": "02/07",
       "heure": "13h45",
       "salle": ""
+    },
+    {
+      "prof": "Christelle",
+      "departement": "IS",
+      "date": "02/07",
+      "heure": "9h00",
+      "salle": ""
     }
   ],
   "etudiants": [],
