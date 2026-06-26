@@ -20,6 +20,13 @@
       "date": "02/07",
       "heure": "10h00",
       "salle": "B010"
+    },
+    {
+      "prof": "Beate",
+      "departement": "2IA",
+      "date": "26/6",
+      "heure": "14",
+      "salle": "C104A"
     }
   ],
   "etudiants": [],
