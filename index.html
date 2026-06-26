@@ -261,8 +261,8 @@
       <option>S6 blanc</option><option>S8 blanc</option>
     </select>
     <select class="filter-select" id="f-toeic" onchange="renderTable()">
-      <option value="">TOEIC tous</option>
-      <option value="1">TOEIC ✓</option><option value="0">TOEIC ✗</option>
+      <option value="">Barre TOEIC tous</option>
+      <option value="1">Barre validée ✓</option><option value="0">EC TOEIC ✗</option>
     </select>
     <select class="filter-select" id="f-traite" onchange="renderTable()">
       <option value="">Tous</option>
@@ -274,7 +274,7 @@
     <table>
       <thead><tr>
         <th>✓</th><th>Nom</th><th>Dept</th><th>An.</th>
-        <th>EC Langue</th><th>TOEIC</th><th>Avis jury</th>
+        <th>EC Langue</th><th>Barre TOEIC</th><th>Avis jury</th>
         <th>Redoublement</th><th>Commentaire</th><th></th>
       </tr></thead>
       <tbody id="etud-tbody"></tbody>
@@ -295,8 +295,8 @@
       <select id="ne-annee"><option>3A</option><option>4A</option><option>5A</option></select>
     </div>
     <div class="form-field"><label>EC Langue</label><input id="ne-eclangue" placeholder="ANGLAIS"></div>
-    <div class="form-field"><label>TOEIC ✓</label>
-      <select id="ne-toeic"><option value="0">Non</option><option value="1">Oui</option></select>
+    <div class="form-field"><label>Barre TOEIC</label>
+      <select id="ne-toeic"><option value="0">Non — EC TOEIC</option><option value="1">Oui — Validée</option></select>
     </div>
     <div class="form-field"><label>Avis</label>
       <select id="ne-avis">
@@ -580,7 +580,10 @@ function renderTable() {
       <td><span style="color:var(--gold);font-weight:700">${esc(e.dept)}</span></td>
       <td>${esc(e.annee)}</td>
       <td style="font-size:11px;color:var(--grey)">${esc(e.ec_langue||'')}</td>
-      <td><span class="toeic-dot ${e.ec_toeic?'dot-ok':'dot-ko'}"></span>${e.ec_toeic?'<span style="color:var(--green);font-size:11px">Validé</span>':'<span style="color:var(--grey2);font-size:11px">Non</span>'}</td>
+      <td><select class="editable" style="min-width:130px" onchange="data.etudiants[${i}].ec_toeic=parseInt(this.value);markDirty();renderTable()">
+        <option value="1"${e.ec_toeic?' selected':''}>✓ Barre validée</option>
+        <option value="0"${!e.ec_toeic?' selected':''}>✗ EC TOEIC</option>
+      </select></td>
       <td><select class="editable" style="min-width:140px" onchange="data.etudiants[${i}].avis=this.value;markDirty();renderTable()">${avisOpts}</select></td>
       <td><input class="editable" value="${esc(e.redoublement||'')}" style="min-width:90px" onchange="data.etudiants[${i}].redoublement=this.value;markDirty()"></td>
       <td><input class="editable" value="${esc(e.commentaire||'')}" style="min-width:160px" onchange="data.etudiants[${i}].commentaire=this.value;markDirty()" title="${esc(e.commentaire||'')}"></td>
