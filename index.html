@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jury École — Langues · Polytech Lille</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
   :root {
     --navy: #0a1628;
@@ -1180,9 +1182,8 @@ function confirmImport() {
 
 // ─── EXPORT PDF PLANNING ─────────────────────────────────
 function exportPlanningPDF() {
-  if (!data.planning.length) { toast('Aucun planning à exporter', true); return; }
+  if (!data.planning.length) { toast('Aucun planning a exporter', true); return; }
 
-  // Trier par date puis heure
   const dateOrder = ['25/06','26/06','27/06','28/06','29/06','30/06',
     '01/07','02/07','03/07','04/07','05/07','06/07','07/07','08/07','09/07','10/07'];
   const sorted = [...data.planning].sort((a,b) => {
@@ -1191,87 +1192,98 @@ function exportPlanningPDF() {
     return (a.heure||'').localeCompare(b.heure||'');
   });
 
-  const today = new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-  const rows = sorted.map((p,i) => {
-    const bg = i%2===0 ? '#f5f0e4' : '#ffffff';
-    return `<tr style="background:${bg}">
-      <td>${p.date||'—'}</td>
-      <td>${p.heure||'—'}</td>
-      <td><strong>${p.departement||'—'}</strong></td>
-      <td>${p.prof||'—'}</td>
-      <td>${p.salle||'—'}</td>
-    </tr>`;
-  }).join('');
+  const navy  = [10, 22, 40];
+  const gold  = [201, 162, 39];
+  const grey  = [74, 90, 120];
+  const cream = [245, 240, 228];
+  const white = [255, 255, 255];
 
-  const html = `<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<title>Planning Jury Ecole - Langues - Polytech Lille</title>
-<style>
-  @page { size: A4; margin: 18mm 15mm; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a2b4a; background: #fff; }
+  const today = new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'});
+  const W = 210, ml = 15, mr = 15, contentW = W - ml - mr;
 
-  .header { border-bottom: 3px solid #c9a227; padding-bottom: 14px; margin-bottom: 22px; display: flex; justify-content: space-between; align-items: flex-end; }
-  .header-left h1 { font-size: 22px; font-weight: 900; color: #0a1628; letter-spacing: .02em; }
-  .header-left h2 { font-size: 14px; font-weight: 400; color: #4a5a78; margin-top: 4px; }
-  .header-right { text-align: right; font-size: 11px; color: #8a9bb5; line-height: 1.6; }
-  .header-right .badge { display: inline-block; background: #c9a227; color: #0a1628; font-weight: 800; font-size: 12px; padding: 3px 10px; border-radius: 4px; }
+  // ── Header band ──
+  doc.setFillColor(...navy);
+  doc.rect(0, 0, W, 28, 'F');
 
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  thead tr { background: #0a1628; color: #c9a227; }
-  thead th { padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
-  tbody td { padding: 9px 12px; border-bottom: 1px solid #e8e0cc; vertical-align: middle; }
-  tbody tr:last-child td { border-bottom: none; }
-  td:nth-child(1) { font-weight: 700; color: #0a1628; white-space: nowrap; }
-  td:nth-child(2) { color: #4a5a78; white-space: nowrap; }
-  td:nth-child(3) { font-size: 13px; }
-  td:nth-child(4) { color: #4a5a78; }
-  td:nth-child(5) { font-family: monospace; font-size: 12px; background: #f0ece0; border-radius: 3px; padding: 4px 10px; }
+  doc.setFillColor(...gold);
+  doc.rect(0, 28, W, 2, 'F');
 
-  .no-date { color: #aaa; font-style: italic; }
-  .footer { margin-top: 24px; padding-top: 10px; border-top: 1px solid #e8e0cc; font-size: 10px; color: #aaa; display: flex; justify-content: space-between; }
-</style>
-</head>
-<body>
-<div class="header">
-  <div class="header-left">
-    <h1>Planning Jury Ecole - Langues</h1>
-    <h2>Polytech Lille - Departement des Langues</h2>
-  </div>
-  <div class="header-right">
-    <div class="badge">CONFIDENTIEL</div><br>
-    Edite le ${today}
-  </div>
-</div>
+  // Logo badge
+  doc.setFillColor(...gold);
+  doc.roundedRect(ml, 6, 12, 12, 2, 2, 'F');
+  doc.setTextColor(...navy);
+  doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('P', ml + 6, 14.5, {align:'center'});
 
-<table>
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Heure</th>
-      <th>Departement</th>
-      <th>Responsable</th>
-      <th>Salle</th>
-    </tr>
-  </thead>
-  <tbody>${rows}</tbody>
-</table>
+  // Title
+  doc.setTextColor(...white);
+  doc.setFontSize(15); doc.setFont('helvetica','bold');
+  doc.text('Planning Jury Ecole - Langues', ml + 16, 13);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.setTextColor(180, 190, 210);
+  doc.text('Polytech Lille - Departement des Langues', ml + 16, 19);
 
-<div class="footer">
-  <span>Polytech Lille - Jury Ecole Langues</span>
-  <span>© M. Vasseur</span>
-</div>
-</body>
-</html>`;
+  // Date
+  doc.setFontSize(8); doc.setTextColor(180, 190, 210);
+  doc.text('Edite le ' + today, W - mr, 13, {align:'right'});
+  doc.setFillColor(...gold);
+  doc.roundedRect(W - mr - 28, 17, 28, 7, 1.5, 1.5, 'F');
+  doc.setTextColor(...navy);
+  doc.setFontSize(7); doc.setFont('helvetica','bold');
+  doc.text('CONFIDENTIEL', W - mr - 14, 21.8, {align:'center'});
 
-  const win = window.open('', '_blank', 'width=900,height=700');
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(() => { win.print(); }, 400);
+  // ── Table ──
+  const rows = sorted.map(p => [
+    p.date  || '—',
+    p.heure || '—',
+    p.departement || '—',
+    p.prof  || '—',
+    p.salle || '—',
+  ]);
+
+  doc.autoTable({
+    startY: 36,
+    margin: { left: ml, right: mr },
+    head: [['Date', 'Heure', 'Departement', 'Responsable', 'Salle']],
+    body: rows,
+    styles: {
+      fontSize: 10,
+      cellPadding: { top: 4, bottom: 4, left: 4, right: 4 },
+      lineColor: cream,
+      lineWidth: 0.3,
+      textColor: navy,
+    },
+    headStyles: {
+      fillColor: navy,
+      textColor: gold,
+      fontStyle: 'bold',
+      fontSize: 9,
+    },
+    alternateRowStyles: { fillColor: cream },
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 22 },
+      1: { cellWidth: 20, textColor: grey },
+      2: { cellWidth: 38, fontStyle: 'bold' },
+      3: { cellWidth: 40, textColor: grey },
+      4: { cellWidth: 22, fontStyle: 'bold' },
+    },
+  });
+
+  // ── Footer ──
+  const finalY = doc.lastAutoTable.finalY + 6;
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.4);
+  doc.line(ml, finalY, W - mr, finalY);
+  doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.setTextColor(...grey);
+  doc.text('Polytech Lille - Jury Ecole Langues', ml, finalY + 5);
+  doc.text('© M. Vasseur', W - mr, finalY + 5, {align:'right'});
+
+  doc.save('Planning_Jury_Ecole_Langues.pdf');
+  toast('PDF telecharge !');
 }
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
