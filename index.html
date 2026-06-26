@@ -992,7 +992,7 @@ function exportEC(type) {
     filename = 'EC_Langue_LV2.xlsx';
   } else if (type === 'quittent') {
     rows = data.etudiants
-      .filter(e => ['Réorientation','Abandon','Année blanche'].includes(e.avis))
+      .filter(e => ['Réorientation','Abandon'].includes(e.avis))
       .sort((a,b) => a.avis.localeCompare(b.avis) || a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
       .map(e => [e.nom, e.dept, e.annee, e.avis||'', e.commentaire||'']);
     const hq = ['Nom', 'Département', 'Année', 'Motif', 'Commentaire'];
