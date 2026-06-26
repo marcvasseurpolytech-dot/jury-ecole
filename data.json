@@ -27,6 +27,13 @@
       "date": "26/6",
       "heure": "14",
       "salle": "C104A"
+    },
+    {
+      "prof": "Christelle",
+      "departement": "MAT",
+      "date": "07/07",
+      "heure": "9h30",
+      "salle": "A110"
     }
   ],
   "etudiants": [],
