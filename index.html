@@ -577,13 +577,15 @@ function renderPlanning() {
     const p = data.planning[idx];
     const hasDate = p.date && p.date.trim();
     const noProf = !p.prof || !p.prof.trim();
+    const noSalle = !p.salle || !p.salle.trim();
     return `<div class="planning-card ${hasDate?'':'no-date'} ${noProf?'no-prof':''}">
       <div class="dept-title">${esc(p.departement||'—')}</div>
       ${noProf ? '<div class="no-prof-banner">⚠ Responsable manquant</div>' : ''}
+      ${noSalle ? '<div class="no-prof-banner" style="background:linear-gradient(90deg,#e07820,#ffaa44,#e07820);background-size:200% 100%;animation:shimmer 1.8s infinite linear">⚠ Salle manquante</div>' : ''}
       <div class="prof-name">👤 ${noProf ? '<span style="color:var(--red);font-style:italic">Non assigné</span>' : esc(p.prof)}</div>
       <div class="planning-info-row">📅 <span>${p.date||'À définir'}</span></div>
       <div class="planning-info-row">🕐 <span>${p.heure||'—'}</span></div>
-      <div class="planning-info-row">📍 <span>${esc(p.salle||'—')}</span></div>
+      <div class="planning-info-row">📍 ${noSalle ? '<span style="color:var(--orange);font-style:italic">Non renseignée</span>' : '<span>'+esc(p.salle)+'</span>'}</div>
     </div>`;
   }).join('');
 
