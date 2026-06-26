@@ -882,7 +882,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "BOUHELIER Yann",
       "dept": "Meca",
       "annee": "3A",
