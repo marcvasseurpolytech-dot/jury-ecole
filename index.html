@@ -351,16 +351,6 @@
             <label>Feuille Excel</label>
             <select id="import-sheet" onchange="loadSheetData()" style="background:var(--navy3);border:1px solid var(--grey2);color:var(--white);padding:6px;border-radius:6px"></select>
           </div>
-          <div class="form-field" style="flex:1;min-width:160px">
-            <label>Département par défaut</label>
-            <select id="import-dept-default" style="background:var(--navy3);border:1px solid var(--grey2);color:var(--white);padding:6px;border-radius:6px">
-              <option value="">— Aucun —</option>
-              <option>2IA</option><option>MAT</option><option>MECA</option><option>SE</option>
-              <option>SE2A</option><option>GC</option><option>GC2A</option><option>GBA</option>
-              <option>PROD2A</option><option>IS</option><option>IS2A</option><option>2GU2A</option>
-              <option>M1GC</option><option>M1GM</option><option>M2</option>
-            </select>
-          </div>
         </div>
         <p id="import-file-info" style="font-size:11px;color:var(--grey);margin-top:8px"></p>
       </div>
@@ -1160,7 +1150,6 @@ function renderImportTable() {
 }
 
 function confirmImport() {
-  const deptDefault = document.getElementById('import-dept-default').value;
   let added = 0;
   importRows.forEach(row => {
     const get = key => {
@@ -1170,11 +1159,11 @@ function confirmImport() {
     const nom = (get('nom') + ' ' + get('prenom')).trim();
     if (!nom) return;
     const toeicRaw = get('toeic').toLowerCase();
-    const ec_toeic = ['1','oui','yes','true','validé','valide','ok'].includes(toeicRaw) ? 1 : 0;
+    const ec_toeic = ['1','oui','yes','true','valide','ok'].includes(toeicRaw) ? 1 : 0;
     const e = {
       traite: false,
       nom,
-      dept: get('dept') || deptDefault || '',
+      dept: get('dept') || '',
       annee: get('annee') || '3A',
       ec_langue: '', ec_langue_val: 0,
       ec_toeic,
