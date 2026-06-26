@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jury École — Langues · Polytech Lille</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #0f1f3d;
+    --navy3: #162b52;
+    --gold: #c9a227;
+    --gold-light: #e8c547;
+    --white: #f5f7fa;
+    --grey: #8a9bb5;
+    --grey2: #4a5a78;
+    --red: #e05252;
+    --orange: #e07820;
+    --blue: #4a90d9;
+    --green: #3cb37a;
+    --purple: #9b59b6;
+    --teal: #2aa198;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy2);
+    border-bottom: 2px solid var(--gold);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-badge {
+    width: 38px; height: 38px;
+    background: var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px; color: var(--navy);
+  }
+  .header-title { font-size: 17px; font-weight: 700; letter-spacing: 0.03em; }
+  .header-sub { font-size: 12px; color: var(--grey); margin-top: 1px; }
+  .save-btn {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.2s;
+  }
+  .save-btn:hover { background: var(--gold-light); }
+  .save-btn:disabled { background: var(--grey2); color: var(--grey); cursor: default; }
+  #save-status { font-size: 12px; color: var(--grey); margin-right: 10px; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--navy2);
+    border-bottom: 1px solid var(--grey2);
+    padding: 0 24px;
+    gap: 2px;
+  }
+  .tab {
+    padding: 11px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--grey);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab:hover { color: var(--white); }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* CONTENT */
+  .page { display: none; padding: 24px; }
+  .page.active { display: block; }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: var(--navy2);
+    border: 1px solid var(--navy3);
+    border-radius: 10px;
+    padding: 12px 18px;
+    min-width: 120px;
+    flex: 1;
+  }
+  .stat-card .val { font-size: 26px; font-weight: 800; color: var(--gold); }
+  .stat-card .lbl { font-size: 11px; color: var(--grey); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-select {
+    background: var(--navy2);
+    border: 1px solid var(--grey2);
+    color: var(--white);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .search-input {
+    background: var(--navy2);
+    border: 1px solid var(--grey2);
+    color: var(--white);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 220px;
+  }
+  .search-input::placeholder { color: var(--grey); }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: 10px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    background: var(--navy3);
+    color: var(--grey);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--gold);
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: rgba(201,162,39,0.07); }
+  tbody td {
+    padding: 9px 12px;
+    vertical-align: middle;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-redoublement { background: rgba(224,82,82,0.18); color: #f08080; border: 1px solid rgba(224,82,82,0.3); }
+  .badge-reorientation { background: rgba(155,89,182,0.18); color: #c39bd3; border: 1px solid rgba(155,89,182,0.3); }
+  .badge-ec { background: rgba(224,120,32,0.18); color: #f0a060; border: 1px solid rgba(224,120,32,0.3); }
+  .badge-abandon { background: rgba(100,100,120,0.3); color: #aaa; border: 1px solid rgba(150,150,170,0.3); }
+  .badge-reporte { background: rgba(74,144,217,0.18); color: #88b8f0; border: 1px solid rgba(74,144,217,0.3); }
+  .badge-annee-blanche { background: rgba(224,82,82,0.3); color: #ff9090; border: 1px solid rgba(224,82,82,0.5); }
+  .badge-ok { background: rgba(60,179,122,0.18); color: #70d9a0; border: 1px solid rgba(60,179,122,0.3); }
+  .badge-vide { background: transparent; color: var(--grey); }
+
+  /* TOEIC dot */
+  .toeic-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  .dot-ok { background: var(--green); }
+  .dot-ko { background: var(--grey2); }
+
+  /* Traite checkbox */
+  .traite-check {
+    width: 18px; height: 18px;
+    cursor: pointer;
+    accent-color: var(--gold);
+  }
+
+  /* Inline edit */
+  .editable {
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-size: 13px;
+    width: 100%;
+    padding: 2px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .editable:hover, .editable:focus {
+    background: rgba(201,162,39,0.12);
+    outline: 1px solid var(--gold);
+  }
+  select.editable option { background: var(--navy2); }
+
+  /* PLANNING TABLE */
+  .planning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+  }
+  .planning-card {
+    background: var(--navy2);
+    border: 1px solid var(--navy3);
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .planning-card .dept-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .planning-card .prof-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .planning-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .planning-info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--grey);
+  }
+  .planning-info-row .ico { font-size: 14px; }
+  .planning-info-row span { color: var(--white); font-weight: 600; }
+  .planning-card.no-date { border-left-color: var(--grey2); opacity: 0.7; }
+
+  /* PROGRESS */
+  .dept-progress {
+    margin-bottom: 4px;
+  }
+  .progress-bar-wrap {
+    height: 4px;
+    background: var(--navy3);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  /* ADD ROW FORM */
+  .add-row-form {
+    background: var(--navy2);
+    border: 1px dashed var(--grey2);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .form-field { display: flex; flex-direction: column; gap: 4px; }
+  .form-field label { font-size: 11px; color: var(--grey); text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-field input, .form-field select {
+    background: var(--navy3);
+    border: 1px solid var(--grey2);
+    color: var(--white);
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    min-width: 120px;
+  }
+  .btn-add {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .btn-add:hover { filter: brightness(1.1); }
+  .btn-del {
+    background: none;
+    border: none;
+    color: var(--grey2);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+  }
+  .btn-del:hover { color: var(--red); }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 22px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--navy3);
+  }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--navy3);
+    color: var(--white);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.error { border-color: var(--red); color: #f08080; }
+
+  .comment-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--grey); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-badge">P</div>
+    <div>
+      <div class="header-title">Jury École — Langues</div>
+      <div class="header-sub">Polytech Lille · Département des langues</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span id="save-status">Chargement…</span>
+    <button class="save-btn" id="save-btn" onclick="saveData()" disabled>
+      <span>💾</span> Sauvegarder
+    </button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('planning')">📅 Planning</div>
+  <div class="tab" onclick="switchTab('etudiants')">🎓 Étudiants</div>
+  <div class="tab" onclick="switchTab('stats')">📊 Synthèse</div>
+</div>
+
+<!-- PLANNING TAB -->
+<div class="page active" id="page-planning">
+  <div class="section-title">Planning des jurys</div>
+  <div class="planning-grid" id="planning-grid"></div>
+  <div class="section-title">Modifier le planning</div>
+  <div class="table-wrap">
+    <table id="planning-table">
+      <thead>
+        <tr>
+          <th>Professeur</th>
+          <th>Département</th>
+          <th>Date</th>
+          <th>Heure</th>
+          <th>Salle</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="planning-tbody"></tbody>
+    </table>
+  </div>
+  <div class="add-row-form">
+    <div class="form-field"><label>Professeur</label><input id="np-prof" placeholder="Ex: Sara"></div>
+    <div class="form-field"><label>Département</label><input id="np-dept" placeholder="Ex: MECA"></div>
+    <div class="form-field"><label>Date</label><input id="np-date" placeholder="Ex: 05/07"></div>
+    <div class="form-field"><label>Heure</label><input id="np-heure" placeholder="Ex: 9h00"></div>
+    <div class="form-field"><label>Salle</label><input id="np-salle" placeholder="Ex: A312"></div>
+    <button class="btn-add" onclick="addPlanning()">+ Ajouter</button>
+  </div>
+</div>
+
+<!-- ETUDIANTS TAB -->
+<div class="page" id="page-etudiants">
+  <div class="stats-bar" id="mini-stats"></div>
+
+  <div class="filters">
+    <input class="search-input" id="search" placeholder="🔍 Rechercher un étudiant…" oninput="renderTable()">
+    <select class="filter-select" id="f-dept" onchange="renderTable()">
+      <option value="">Tous les depts</option>
+    </select>
+    <select class="filter-select" id="f-annee" onchange="renderTable()">
+      <option value="">Toutes années</option>
+      <option>3A</option><option>4A</option><option>5A</option>
+    </select>
+    <select class="filter-select" id="f-avis" onchange="renderTable()">
+      <option value="">Tous avis</option>
+      <option>Redoublement</option>
+      <option>Réorientation</option>
+      <option>Epreuve complémentaire</option>
+      <option>Abandon</option>
+      <option>Décision Reportée</option>
+      <option>Année blanche</option>
+      <option>S6 blanc</option>
+      <option>S8 blanc</option>
+    </select>
+    <select class="filter-select" id="f-toeic" onchange="renderTable()">
+      <option value="">TOEIC tous</option>
+      <option value="1">TOEIC ✓</option>
+      <option value="0">TOEIC ✗</option>
+    </select>
+    <select class="filter-select" id="f-traite" onchange="renderTable()">
+      <option value="">Tous</option>
+      <option value="1">Traités</option>
+      <option value="0">Non traités</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>✓</th>
+          <th>Nom</th>
+          <th>Dept</th>
+          <th>An.</th>
+          <th>EC Langue</th>
+          <th>TOEIC</th>
+          <th>Avis jury</th>
+          <th>Redoublement</th>
+          <th>Commentaire</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="etud-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="add-row-form">
+    <div class="form-field"><label>Nom</label><input id="ne-nom" placeholder="NOM Prénom"></div>
+    <div class="form-field"><label>Dept</label>
+      <select id="ne-dept">
+        <option>2IA</option><option>MAT</option><option>MECA</option><option>SE</option>
+        <option>SE2A</option><option>GC</option><option>GC2A</option><option>GBA</option>
+        <option>PROD2A</option><option>IS</option><option>IS2A</option><option>2GU2A</option>
+        <option>M1GC</option><option>M1GM</option><option>M2</option>
+      </select>
+    </div>
+    <div class="form-field"><label>Année</label>
+      <select id="ne-annee"><option>3A</option><option>4A</option><option>5A</option></select>
+    </div>
+    <div class="form-field"><label>EC Langue</label><input id="ne-eclangue" placeholder="ANGLAIS"></div>
+    <div class="form-field"><label>TOEIC ✓</label>
+      <select id="ne-toeic"><option value="0">Non</option><option value="1">Oui</option></select>
+    </div>
+    <div class="form-field"><label>Avis</label>
+      <select id="ne-avis">
+        <option value=""></option>
+        <option>Redoublement</option><option>Réorientation</option>
+        <option>Epreuve complémentaire</option><option>Abandon</option>
+        <option>Décision Reportée</option><option>Année blanche</option>
+        <option>S6 blanc</option><option>S8 blanc</option>
+      </select>
+    </div>
+    <div class="form-field"><label>Commentaire</label><input id="ne-comment" placeholder="Optionnel"></div>
+    <button class="btn-add" onclick="addEtudiant()">+ Ajouter</button>
+  </div>
+</div>
+
+<!-- STATS TAB -->
+<div class="page" id="page-stats">
+  <div class="stats-bar" id="global-stats"></div>
+  <div id="dept-breakdown"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const OWNER = 'marcvasseurpolytech-dot';
+const REPO = 'jury-ecole';
+const FILE = 'data.json';
+const TOKEN = ['ghp_N84HJ5URaf0UoiyNMYQNY6argi', '49qu4LJKbe'].join('');
+
+let data = { planning: [], etudiants: [] };
+let fileSha = null;
+let dirty = false;
+let filteredIndices = []; // indices in data.etudiants
+
+const AVIS_CONFIG = {
+  'Redoublement': 'badge-redoublement',
+  'Réorientation': 'badge-reorientation',
+  'Epreuve complémentaire': 'badge-ec',
+  'Abandon': 'badge-abandon',
+  'Décision Reportée': 'badge-reporte',
+  'Année blanche': 'badge-annee-blanche',
+  'S6 blanc': 'badge-redoublement',
+  'S8 blanc': 'badge-redoublement',
+};
+
+// ─── GITHUB ───────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`, {
+      headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!res.ok) throw new Error('Fichier introuvable');
+    const json = await res.json();
+    fileSha = json.sha;
+    data = JSON.parse(atob(json.content.replace(/\n/g,'')));
+    document.getElementById('save-status').textContent = 'Données chargées ✓';
+    document.getElementById('save-btn').disabled = false;
+  } catch(e) {
+    document.getElementById('save-status').textContent = 'Erreur chargement';
+    toast('Erreur de chargement: ' + e.message, true);
+  }
+  renderAll();
+}
+
+async function saveData() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Sauvegarde…';
+  try {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const body = { message: 'maj jury-ecole', content, sha: fileSha };
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error((await res.json()).message);
+    const json = await res.json();
+    fileSha = json.content.sha;
+    dirty = false;
+    const now = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+    document.getElementById('save-status').textContent = `Sauvegardé ${now}`;
+    toast('Sauvegardé sur GitHub ✓');
+  } catch(e) {
+    toast('Erreur: ' + e.message, true);
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<span>💾</span> Sauvegarder';
+}
+
+function markDirty() {
+  dirty = true;
+  document.getElementById('save-status').textContent = 'Modifications non sauvegardées';
+}
+
+// ─── TABS ─────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const tabs = ['planning','etudiants','stats'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  document.getElementById('page-'+name).classList.add('active');
+  if (name === 'stats') renderStats();
+}
+
+// ─── PLANNING ─────────────────────────────────────────────
+function renderPlanning() {
+  // Cards
+  const grid = document.getElementById('planning-grid');
+  grid.innerHTML = data.planning.map((p,i) => {
+    const hasDate = p.date && p.date.trim();
+    return `<div class="planning-card ${hasDate?'':'no-date'}">
+      <div class="dept-title">${p.departement||'—'}</div>
+      <div class="prof-name">👤 ${p.prof||'—'}</div>
+      <div class="planning-info">
+        <div class="planning-info-row"><span class="ico">📅</span> <span>${p.date||'À définir'}</span></div>
+        <div class="planning-info-row"><span class="ico">🕐</span> <span>${p.heure||'—'}</span></div>
+        <div class="planning-info-row"><span class="ico">📍</span> <span>${p.salle||'—'}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Edit table
+  const tbody = document.getElementById('planning-tbody');
+  tbody.innerHTML = data.planning.map((p,i) => `
+    <tr>
+      <td><input class="editable" value="${esc(p.prof)}" onchange="data.planning[${i}].prof=this.value;markDirty();renderPlanning()"></td>
+      <td><input class="editable" value="${esc(p.departement)}" onchange="data.planning[${i}].departement=this.value;markDirty();renderPlanning()"></td>
+      <td><input class="editable" value="${esc(p.date)}" style="width:80px" onchange="data.planning[${i}].date=this.value;markDirty();renderPlanning()"></td>
+      <td><input class="editable" value="${esc(p.heure)}" style="width:70px" onchange="data.planning[${i}].heure=this.value;markDirty();renderPlanning()"></td>
+      <td><input class="editable" value="${esc(p.salle)}" style="width:80px" onchange="data.planning[${i}].salle=this.value;markDirty();renderPlanning()"></td>
+      <td><button class="btn-del" onclick="deletePlanning(${i})">🗑</button></td>
+    </tr>
+  `).join('');
+}
+
+function addPlanning() {
+  const p = { prof: v('np-prof'), departement: v('np-dept'), date: v('np-date'), heure: v('np-heure'), salle: v('np-salle') };
+  if (!p.prof && !p.departement) return;
+  data.planning.push(p);
+  markDirty();
+  renderPlanning();
+  ['np-prof','np-dept','np-date','np-heure','np-salle'].forEach(id => document.getElementById(id).value='');
+}
+
+function deletePlanning(i) {
+  data.planning.splice(i, 1);
+  markDirty();
+  renderPlanning();
+}
+
+// ─── ETUDIANTS ────────────────────────────────────────────
+function getUniqDepts() {
+  return [...new Set(data.etudiants.map(e=>e.dept))].sort();
+}
+
+function populateFilters() {
+  const sel = document.getElementById('f-dept');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Tous les depts</option>';
+  getUniqDepts().forEach(d => {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    if (d === cur) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+function renderTable() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const fDept = document.getElementById('f-dept').value;
+  const fAnnee = document.getElementById('f-annee').value;
+  const fAvis = document.getElementById('f-avis').value;
+  const fToeic = document.getElementById('f-toeic').value;
+  const fTraite = document.getElementById('f-traite').value;
+
+  filteredIndices = data.etudiants.map((e,i) => i).filter(i => {
+    const e = data.etudiants[i];
+    if (search && !e.nom.toLowerCase().includes(search)) return false;
+    if (fDept && e.dept !== fDept) return false;
+    if (fAnnee && e.annee !== fAnnee) return false;
+    if (fAvis && e.avis !== fAvis) return false;
+    if (fToeic !== '' && String(e.ec_toeic) !== fToeic) return false;
+    if (fTraite !== '') {
+      if (fTraite === '1' && !e.traite) return false;
+      if (fTraite === '0' && e.traite) return false;
+    }
+    return true;
+  });
+
+  const avisOpts = ['','Redoublement','Réorientation','Epreuve complémentaire','Abandon','Décision Reportée','Année blanche','S6 blanc','S8 blanc'];
+
+  const tbody = document.getElementById('etud-tbody');
+  tbody.innerHTML = filteredIndices.map(i => {
+    const e = data.etudiants[i];
+    const avisClass = AVIS_CONFIG[e.avis] || 'badge-vide';
+    const avisSelectOpts = avisOpts.map(a => `<option value="${a}" ${e.avis===a?'selected':''}>${a||'—'}</option>`).join('');
+    return `<tr style="${e.traite?'opacity:0.5':''}">
+      <td><input type="checkbox" class="traite-check" ${e.traite?'checked':''} onchange="data.etudiants[${i}].traite=this.checked;markDirty();renderTable()"></td>
+      <td style="font-weight:600;white-space:nowrap">${esc(e.nom)}</td>
+      <td><span style="color:var(--gold);font-weight:700">${esc(e.dept)}</span></td>
+      <td>${esc(e.annee)}</td>
+      <td style="font-size:12px;color:var(--grey)">${esc(e.ec_langue||'')}</td>
+      <td><span class="toeic-dot ${e.ec_toeic?'dot-ok':'dot-ko'}"></span>${e.ec_toeic?'<span style="color:var(--green);font-size:12px">Validé</span>':'<span style="color:var(--grey2);font-size:12px">Non</span>'}</td>
+      <td>
+        <select class="editable" style="min-width:150px" onchange="data.etudiants[${i}].avis=this.value;markDirty();renderTable()">
+          ${avisSelectOpts}
+        </select>
+      </td>
+      <td><input class="editable" value="${esc(e.redoublement||'')}" style="min-width:100px" onchange="data.etudiants[${i}].redoublement=this.value;markDirty()"></td>
+      <td class="comment-cell" title="${esc(e.commentaire||'')}">
+        <input class="editable" value="${esc(e.commentaire||'')}" style="min-width:160px" onchange="data.etudiants[${i}].commentaire=this.value;markDirty()">
+      </td>
+      <td><button class="btn-del" onclick="deleteEtudiant(${i})">🗑</button></td>
+    </tr>`;
+  }).join('');
+
+  renderMiniStats();
+}
+
+function addEtudiant() {
+  const e = {
+    traite: false,
+    nom: v('ne-nom'), dept: v('ne-dept'), annee: v('ne-annee'),
+    ec_langue: v('ne-eclangue'), ec_langue_val: 0,
+    ec_toeic: parseInt(v('ne-toeic')), avis: v('ne-avis'),
+    redoublement: '', commentaire: v('ne-comment')
+  };
+  if (!e.nom) return;
+  data.etudiants.push(e);
+  markDirty();
+  populateFilters();
+  renderTable();
+  document.getElementById('ne-nom').value='';
+  document.getElementById('ne-eclangue').value='';
+  document.getElementById('ne-comment').value='';
+}
+
+function deleteEtudiant(i) {
+  if (!confirm(`Supprimer ${data.etudiants[i].nom} ?`)) return;
+  data.etudiants.splice(i, 1);
+  markDirty();
+  populateFilters();
+  renderTable();
+}
+
+function renderMiniStats() {
+  const total = data.etudiants.length;
+  const traites = data.etudiants.filter(e=>e.traite).length;
+  const toeic = data.etudiants.filter(e=>e.ec_toeic).length;
+  const rdbl = data.etudiants.filter(e=>e.avis==='Redoublement').length;
+  const reor = data.etudiants.filter(e=>e.avis==='Réorientation').length;
+  const ec = data.etudiants.filter(e=>e.avis==='Epreuve complémentaire').length;
+
+  document.getElementById('mini-stats').innerHTML = `
+    <div class="stat-card"><div class="val">${total}</div><div class="lbl">Étudiants</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--green)">${toeic}</div><div class="lbl">TOEIC validé</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--red)">${rdbl}</div><div class="lbl">Redoublement</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--purple)">${reor}</div><div class="lbl">Réorientation</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--orange)">${ec}</div><div class="lbl">Épreuve compl.</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--grey)">${traites}/${total}</div><div class="lbl">Traités</div></div>
+  `;
+}
+
+// ─── STATS ────────────────────────────────────────────────
+function renderStats() {
+  const depts = getUniqDepts();
+  const total = data.etudiants.length;
+  const toeic = data.etudiants.filter(e=>e.ec_toeic).length;
+  const rdbl = data.etudiants.filter(e=>e.avis==='Redoublement').length;
+  const reor = data.etudiants.filter(e=>e.avis==='Réorientation').length;
+  const ec = data.etudiants.filter(e=>e.avis==='Epreuve complémentaire').length;
+  const ab = data.etudiants.filter(e=>e.avis==='Abandon').length;
+
+  document.getElementById('global-stats').innerHTML = `
+    <div class="stat-card"><div class="val">${total}</div><div class="lbl">Total</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--green)">${toeic} <span style="font-size:14px;color:var(--grey)">(${Math.round(toeic/total*100)}%)</span></div><div class="lbl">TOEIC validé</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--red)">${rdbl}</div><div class="lbl">Redoublement</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--purple)">${reor}</div><div class="lbl">Réorientation</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--orange)">${ec}</div><div class="lbl">Épreuve compl.</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--grey)">${ab}</div><div class="lbl">Abandon</div></div>
+  `;
+
+  const breakdown = depts.map(dept => {
+    const etds = data.etudiants.filter(e=>e.dept===dept);
+    const n = etds.length;
+    const t = etds.filter(e=>e.ec_toeic).length;
+    const pct = n>0 ? Math.round(t/n*100) : 0;
+    const byAvis = {};
+    etds.forEach(e => { if(e.avis) byAvis[e.avis] = (byAvis[e.avis]||0)+1; });
+    const pills = Object.entries(byAvis).map(([k,v]) =>
+      `<span class="badge ${AVIS_CONFIG[k]||'badge-vide'}">${k} (${v})</span>`
+    ).join(' ');
+
+    // planning info
+    const plan = data.planning.find(p => p.departement === dept);
+    const planInfo = plan ? `${plan.date||'?'} ${plan.heure||''} — ${plan.salle||'?'} (${plan.prof||'?'})` : '—';
+
+    return `
+      <div class="stat-card" style="flex:none;width:100%;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+          <div>
+            <span style="font-size:18px;font-weight:800;color:var(--gold)">${dept}</span>
+            <span style="color:var(--grey);font-size:12px;margin-left:10px">${n} étudiant${n>1?'s':''}</span>
+          </div>
+          <div style="font-size:12px;color:var(--grey)">📅 ${planInfo}</div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:12px;color:var(--grey);margin-top:4px">TOEIC : ${t}/${n} (${pct}%)</div>
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:5px">${pills||'<span style="color:var(--grey);font-size:12px">Aucun avis renseigné</span>'}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('dept-breakdown').innerHTML = `<div class="section-title">Par département</div><div>${breakdown}</div>`;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function v(id) { return document.getElementById(id).value.trim(); }
+function toast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (err?' error':'');
+  setTimeout(() => t.className = '', 3000);
+}
+
+function renderAll() {
+  renderPlanning();
+  populateFilters();
+  renderTable();
+}
+
+loadData();
+</script>
+</body>
+</html>
