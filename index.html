@@ -1283,6 +1283,8 @@ function exportPlanningPDF() {
   doc.autoTable({
     startY: 36,
     margin: { left: ml, right: mr },
+    rowPageBreak: 'avoid',
+    pageBreak: 'avoid',
     head: [['Date', 'Heure', 'Departement', 'Responsable', 'Salle']],
     body: rows,
     styles: {
