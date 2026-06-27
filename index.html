@@ -1229,7 +1229,7 @@ function exportPlanningPDF() {
   });
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
   const navy  = [10, 22, 40];
   const gold  = [201, 162, 39];
@@ -1238,7 +1238,7 @@ function exportPlanningPDF() {
   const white = [255, 255, 255];
 
   const today = new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'});
-  const W = 210, ml = 15, mr = 15, contentW = W - ml - mr;
+  const W = 297, ml = 15, mr = 15, contentW = W - ml - mr;
 
   // ── Header band ──
   doc.setFillColor(...navy);
