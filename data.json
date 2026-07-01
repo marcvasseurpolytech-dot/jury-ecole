@@ -78,7 +78,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "BRETON Alienor",
       "dept": "GBA",
       "annee": "4A",
@@ -90,7 +90,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "DUTHOIT Manon",
       "dept": "GBA",
       "annee": "4A",
