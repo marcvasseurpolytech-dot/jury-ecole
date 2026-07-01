@@ -102,7 +102,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "ITERITEKA Aniella",
       "dept": "GBA",
       "annee": "4A",
@@ -140,18 +140,6 @@
     {
       "traite": false,
       "nom": "DEBAS Antoine",
-      "dept": "MECA",
-      "annee": "4A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 0,
-      "avis": "",
-      "redoublement": "",
-      "commentaire": ""
-    },
-    {
-      "traite": false,
-      "nom": "MORTIER Joseph",
       "dept": "MECA",
       "annee": "4A",
       "ec_langue": "",
