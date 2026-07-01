@@ -66,30 +66,6 @@
   ],
   "etudiants": [
     {
-      "traite": true,
-      "nom": "DUTHOIT Manon",
-      "dept": "GBA",
-      "annee": "4A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 0,
-      "avis": "",
-      "redoublement": "",
-      "commentaire": ""
-    },
-    {
-      "traite": true,
-      "nom": "ITERITEKA Aniella",
-      "dept": "GBA",
-      "annee": "4A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 0,
-      "avis": "",
-      "redoublement": "",
-      "commentaire": ""
-    },
-    {
       "traite": false,
       "nom": "ROUTIER Flore",
       "dept": "GBA",
