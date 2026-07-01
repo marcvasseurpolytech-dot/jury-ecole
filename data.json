@@ -67,18 +67,6 @@
   "etudiants": [
     {
       "traite": true,
-      "nom": "VANLANDE Lea",
-      "dept": "GBA",
-      "annee": "3A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 0,
-      "avis": "",
-      "redoublement": "",
-      "commentaire": ""
-    },
-    {
-      "traite": true,
       "nom": "BRETON Alienor",
       "dept": "GBA",
       "annee": "4A",
