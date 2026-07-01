@@ -64,31 +64,6 @@
       "salle": "Arsonval"
     }
   ],
-  "etudiants": [
-    {
-      "traite": false,
-      "nom": "ROUTIER Flore",
-      "dept": "GBA",
-      "annee": "4A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 0,
-      "avis": "",
-      "redoublement": "",
-      "commentaire": ""
-    },
-    {
-      "traite": false,
-      "nom": "DEBAS Antoine",
-      "dept": "MECA",
-      "annee": "4A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 0,
-      "avis": "",
-      "redoublement": "",
-      "commentaire": ""
-    }
-  ],
+  "etudiants": [],
   "annee": "2025-2026"
 }
