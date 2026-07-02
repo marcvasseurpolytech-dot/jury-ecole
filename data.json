@@ -196,6 +196,18 @@
       "avis": "",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "ZHANG Xilong",
+      "dept": "SE",
+      "annee": "4A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "",
+      "redoublement": "",
+      "commentaire": ""
     }
   ],
   "annee": "2025-2026"
