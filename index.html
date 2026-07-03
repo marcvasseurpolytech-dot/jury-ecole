@@ -476,7 +476,8 @@ async function loadData() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     fileSha = json.sha;
-    data = JSON.parse(atob(json.content.replace(/\n/g, '')));
+    const raw = Uint8Array.from(atob(json.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+    data = JSON.parse(new TextDecoder('utf-8').decode(raw));
     setSaveStatus('Données chargées ✓');
     document.getElementById('save-btn').disabled = false;
   } catch(e) {
