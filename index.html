@@ -1210,6 +1210,11 @@ function confirmImport() {
 }
 
 // ─── EXPORT PDF PLANNING ─────────────────────────────────
+// Translittération accents pour jsPDF (helvetica ne supporte pas l'UTF-8)
+function da(s) {
+  return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\u2014/g,'-').replace(/[^\x00-\x7F]/g,'?');
+}
+
 function exportPlanningPDF() {
   if (!data.planning.length) { toast('Aucun planning a exporter', true); return; }
 
@@ -1257,14 +1262,14 @@ function exportPlanningPDF() {
   // Title
   doc.setTextColor(...white);
   doc.setFontSize(15); doc.setFont('helvetica','bold');
-  doc.text('Planning Jury Ecole - Langues ' + (data.annee||'2025-2026'), ml + 16, 13);
+  doc.text(da('Planning Jury Ecole - Langues ' + (data.annee||'2025-2026')), ml + 16, 13);
   doc.setFontSize(9); doc.setFont('helvetica','normal');
   doc.setTextColor(180, 190, 210);
-  doc.text('Polytech Lille - Departement des Langues - ' + (data.annee||'2025-2026'), ml + 16, 19);
+  doc.text(da('Polytech Lille - Departement des Langues - ' + (data.annee||'2025-2026')), ml + 16, 19);
 
   // Date
   doc.setFontSize(8); doc.setTextColor(180, 190, 210);
-  doc.text('Edite le ' + today, W - mr, 13, {align:'right'});
+  doc.text(da('Edite le ' + today), W - mr, 13, {align:'right'});
   doc.setFillColor(...gold);
   doc.roundedRect(W - mr - 28, 17, 28, 7, 1.5, 1.5, 'F');
   doc.setTextColor(...navy);
@@ -1273,11 +1278,11 @@ function exportPlanningPDF() {
 
   // ── Table ──
   const rows = sorted.map(p => [
-    p.date  || '—',
-    p.heure || '—',
-    p.departement || '—',
-    p.prof  || '—',
-    p.salle || '—',
+    da(p.date||'—'),
+    da(p.heure||'—'),
+    da(p.departement||'—'),
+    da(p.prof||'—'),
+    da(p.salle||'—'),
   ]);
 
   doc.autoTable({
@@ -1318,8 +1323,8 @@ function exportPlanningPDF() {
   doc.line(ml, finalY, W - mr, finalY);
   doc.setFontSize(8); doc.setFont('helvetica','normal');
   doc.setTextColor(...grey);
-  doc.text('Polytech Lille - Jury Ecole Langues - ' + (data.annee||'2025-2026'), ml, finalY + 5);
-  doc.text('© M. Vasseur', W - mr, finalY + 5, {align:'right'});
+  doc.text(da('Polytech Lille - Jury Ecole Langues - ' + (data.annee||'2025-2026')), ml, finalY + 5);
+  doc.text(da('© M. Vasseur'), W - mr, finalY + 5, {align:'right'});
 
   doc.save('Planning_Jury_Ecole_Langues.pdf');
   toast('PDF telecharge !');
