@@ -775,7 +775,9 @@ function renderStats() {
     '<button class="btn btn-gold" onclick="exportEC(\'toeic\')">&#128228; EC TOEIC</button>' +
     '<button class="btn" style="background:rgba(74,144,217,.25);color:#88b8f0;border:1px solid rgba(74,144,217,.4)" onclick="exportEC(\'lv1\')">&#128228; EC Langue LV1</button>' +
     '<button class="btn" style="background:rgba(155,89,182,.25);color:#c39bd3;border:1px solid rgba(155,89,182,.4)" onclick="exportEC(\'lv2\')">&#128228; EC Langue LV2</button>' +
-    '<button class="btn" style="background:rgba(224,82,82,.25);color:#f08080;border:1px solid rgba(224,82,82,.4)" onclick="exportEC(\'quittent\')">&#128228; Quittent Polytech</button>';
+    '<button class="btn" style="background:rgba(224,82,82,.25);color:#f08080;border:1px solid rgba(224,82,82,.4)" onclick="exportEC(\'quittent\')">&#128228; Quittent Polytech</button>' +
+    '<button class="btn" style="background:rgba(155,89,182,.25);color:#c39bd3;border:1px solid rgba(155,89,182,.4)" onclick="exportEC(\'reorientation\')">&#128228; Réorientations</button>' +
+    '<button class="btn" style="background:rgba(224,82,82,.18);color:#f08080;border:1px solid rgba(224,82,82,.35)" onclick="exportEC(\'redoublement\')">&#128228; Redoublements</button>';
 
   // ── Ordre des types de rattrapage ──
   const TYPE_ORDER = [
@@ -991,6 +993,24 @@ function exportEC(type) {
       .sort((a,b) => a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
       .map(e => [e.nom, e.dept, e.annee, e.avis||'', e.redoublement||'', e.commentaire||'']);
     filename = 'EC_Langue_LV2.xlsx';
+  } else if (type === 'reorientation') {
+    rows = data.etudiants
+      .filter(e => e.avis === 'Réorientation')
+      .sort((a,b) => a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
+      .map(e => [e.nom, e.dept, e.annee, e.redoublement||'', e.commentaire||'']);
+    const hr = ['Nom', 'Département', 'Année', 'Semestres', 'Commentaire'];
+    _writeXLS([hr, ...rows], 'Reorientations.xlsx');
+    return;
+  } else if (type === 'redoublement') {
+    // Un export par semestre : on regroupe tous les redoublements
+    // Colonnes : Nom, Dept, Année actuelle, Semestres redoublés, Commentaire
+    rows = data.etudiants
+      .filter(e => e.avis === 'Redoublement' || e.avis === 'S6 blanc' || e.avis === 'S8 blanc' || e.avis === 'Année blanche')
+      .sort((a,b) => a.dept.localeCompare(b.dept) || a.annee.localeCompare(b.annee) || a.nom.localeCompare(b.nom))
+      .map(e => [e.nom, e.dept, e.annee, e.avis||'', e.redoublement||'', e.commentaire||'']);
+    const hd = ['Nom', 'Département', 'Année', 'Type', 'Semestres redoublés', 'Commentaire'];
+    _writeXLS([hd, ...rows], 'Redoublements.xlsx');
+    return;
   } else if (type === 'quittent') {
     rows = data.etudiants
       .filter(e => ['Réorientation','Abandon'].includes(e.avis))
