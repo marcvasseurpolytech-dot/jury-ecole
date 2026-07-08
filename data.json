@@ -1072,6 +1072,18 @@
       "avis": "Redoublement",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "COUSSEMACQ Louis",
+      "dept": "PROD2A",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 1,
+      "avis": "Redoublement",
+      "redoublement": "",
+      "commentaire": "S5 et S6"
     }
   ],
   "annee": "2025-2026"
