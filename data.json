@@ -510,7 +510,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "BEURTHERET",
       "dept": "GC",
       "annee": "3A",
