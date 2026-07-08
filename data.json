@@ -222,7 +222,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "PETROWSKI",
       "dept": "SE",
       "annee": "3A",
@@ -234,7 +234,7 @@
       "commentaire": "S5 -EIF"
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "NGO Bitjong Makusi Ingrid",
       "dept": "SE",
       "annee": "3A",
