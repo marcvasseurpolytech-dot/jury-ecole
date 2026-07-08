@@ -234,7 +234,7 @@
       "commentaire": "S5 -EIF"
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "NGO Bitjong Makusi Ingrid",
       "dept": "SE",
       "annee": "3A",
