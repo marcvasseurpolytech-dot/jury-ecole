@@ -102,7 +102,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "BARON Clément",
       "dept": "SE",
       "annee": "4A",
