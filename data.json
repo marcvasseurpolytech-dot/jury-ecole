@@ -330,7 +330,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "EL Houmaidi Fatima",
       "dept": "GBA",
       "annee": "3A",
