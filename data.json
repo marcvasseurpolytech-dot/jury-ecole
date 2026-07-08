@@ -484,6 +484,18 @@
       "avis": "Epreuve complémentaire",
       "redoublement": "",
       "commentaire": "après vote car il était prévu qu'il soit réorienté"
+    },
+    {
+      "traite": false,
+      "nom": "LEGAY Yohann",
+      "dept": "GC",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 1,
+      "avis": "Réorientation",
+      "redoublement": "",
+      "commentaire": ""
     }
   ],
   "annee": "2025-2026"
