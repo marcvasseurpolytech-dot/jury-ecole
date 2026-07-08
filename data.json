@@ -282,7 +282,7 @@
       "commentaire": "S6 (et EC TOEIC) EIF"
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "BEAULIEU Charli",
       "dept": "SE",
       "annee": "3A",
