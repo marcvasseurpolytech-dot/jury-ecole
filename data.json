@@ -210,7 +210,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "TRUC Muche",
       "dept": "2IA",
       "annee": "3A",
@@ -222,7 +222,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "PETROWSKI",
       "dept": "SE",
       "annee": "3A",
