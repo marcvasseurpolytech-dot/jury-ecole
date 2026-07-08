@@ -304,6 +304,18 @@
       "avis": "Année blanche",
       "redoublement": "",
       "commentaire": "part à paris Saclay"
+    },
+    {
+      "traite": false,
+      "nom": "FLAMENT Jordan",
+      "dept": "SE",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "Année blanche",
+      "redoublement": "",
+      "commentaire": ""
     }
   ],
   "annee": "2025-2026"
