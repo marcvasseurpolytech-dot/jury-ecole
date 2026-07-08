@@ -270,7 +270,7 @@
       "commentaire": "S5 et S6 EIF"
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "NGOWET Louembet Hyacinte",
       "dept": "SE",
       "annee": "3A",
@@ -282,7 +282,7 @@
       "commentaire": "S6 (et EC TOEIC) EIF"
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "BEAULIEU Charli",
       "dept": "SE",
       "annee": "3A",
