@@ -246,7 +246,7 @@
       "commentaire": "EIF"
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "RISS Jean Etienne",
       "dept": "SE",
       "annee": "3A",
@@ -258,7 +258,7 @@
       "commentaire": "S5 EIF"
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "JAFFLIN Simon",
       "dept": "SE",
       "annee": "3A",
