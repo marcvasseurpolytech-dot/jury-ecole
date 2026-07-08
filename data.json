@@ -222,7 +222,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "PETROWSKI",
       "dept": "SE",
       "annee": "3A",
