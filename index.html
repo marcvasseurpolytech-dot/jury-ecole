@@ -981,9 +981,10 @@ function exportEC(type) {
   const header = ['Nom', 'Département', 'Année', 'Avis jury', 'Redoublement', 'Commentaire'];
 
   if (type === 'toeic') {
-    // Tous ceux qui n'ont pas validé le TOEIC (hors abandon/réorientation si souhaité)
+    // Seulement ceux qui passent vraiment l'EC TOEIC : barre non validée ET restent à l'école
+    const QUITTENT = ['Réorientation','Abandon'];
     rows = data.etudiants
-      .filter(e => !e.ec_toeic)
+      .filter(e => !e.ec_toeic && !QUITTENT.includes(e.avis))
       .sort((a,b) => a.dept.localeCompare(b.dept) || a.nom.localeCompare(b.nom))
       .map(e => [e.nom, e.dept, e.annee, e.avis||'', e.redoublement||'', e.commentaire||'']);
     filename = 'EC_TOEIC.xlsx';
