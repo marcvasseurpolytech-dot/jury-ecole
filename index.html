@@ -760,15 +760,17 @@ function renderStats() {
   const o  = data.etudiants.filter(e=>e.avis==='Réorientation').length;
   const ec = data.etudiants.filter(e=>e.avis==='Epreuve complémentaire').length;
   const ab = data.etudiants.filter(e=>e.avis==='Abandon').length;
+  const ecToeic = data.etudiants.filter(e => !e.ec_toeic && !['Réorientation','Abandon'].includes(e.avis)).length;
 
   // ── Barre stats globale ──
   document.getElementById('global-stats').innerHTML =
-    sc(n,   'Total',           'var(--white)')  +
-    sc(t,   'Barre TOEIC ✓', 'var(--green)',  n ? Math.round(t/n*100)+'%' : '') +
-    sc(r,   'Redoublement',    'var(--red)')    +
-    sc(o,   'Réorientation',  'var(--purple)') +
-    sc(ec,  'Épreuve compl.', 'var(--orange)') +
-    sc(ab,  'Abandon',         'var(--grey)');
+    sc(n,      'Total',          'var(--white)')  +
+    sc(t,      'TOEIC validé',   'var(--green)',  n ? Math.round(t/n*100)+'%' : '') +
+    sc(ecToeic,'EC TOEIC',       'var(--gold)') +
+    sc(r,      'Redoublement',   'var(--red)')    +
+    sc(o,      'Réorientation',  'var(--purple)') +
+    sc(ec,     'Épreuve compl.', 'var(--orange)') +
+    sc(ab,     'Abandon',        'var(--grey)');
 
   // ── Barre exports ──
   document.getElementById('export-bar').innerHTML =
