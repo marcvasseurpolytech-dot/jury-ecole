@@ -174,7 +174,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "PAYET Cédric",
       "dept": "SE",
       "annee": "4A",
