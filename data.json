@@ -1012,6 +1012,18 @@
       "avis": "Redoublement",
       "redoublement": "",
       "commentaire": "PROD (mais ça n'apparaît pas dans les choix...)"
+    },
+    {
+      "traite": false,
+      "nom": "VERHAEGUE Charles",
+      "dept": "PROD2A",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "Redoublement",
+      "redoublement": "",
+      "commentaire": "PROD et non PROD2A"
     }
   ],
   "annee": "2025-2026"
