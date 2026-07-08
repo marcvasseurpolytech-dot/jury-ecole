@@ -544,6 +544,18 @@
       "avis": "",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "ADAMOU Salim",
+      "dept": "IS",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "",
+      "redoublement": "",
+      "commentaire": ""
     }
   ],
   "annee": "2025-2026"
