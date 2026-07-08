@@ -928,6 +928,18 @@
       "avis": "Redoublement",
       "redoublement": "",
       "commentaire": "va passer l'EC TOIEC bien qu'elle redouble"
+    },
+    {
+      "traite": false,
+      "nom": "POINTEL Killian",
+      "dept": "MECA",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "Redoublement",
+      "redoublement": "",
+      "commentaire": "S5+S6"
     }
   ],
   "annee": "2025-2026"
