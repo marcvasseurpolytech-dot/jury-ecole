@@ -316,6 +316,18 @@
       "avis": "",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "DABIT Camille",
+      "dept": "GBA",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 1,
+      "avis": "Epreuve complémentaire",
+      "redoublement": "",
+      "commentaire": ""
     }
   ],
   "annee": "2025-2026"
