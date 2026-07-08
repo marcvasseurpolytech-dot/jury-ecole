@@ -856,6 +856,18 @@
       "avis": "Abandon",
       "redoublement": "",
       "commentaire": "IOT"
+    },
+    {
+      "traite": false,
+      "nom": "DOS Santos Doren",
+      "dept": "SE",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 1,
+      "avis": "Année blanche",
+      "redoublement": "",
+      "commentaire": "IOT"
     }
   ],
   "annee": "2025-2026"
