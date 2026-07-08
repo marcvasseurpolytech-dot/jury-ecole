@@ -532,6 +532,18 @@
       "avis": "Abandon",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "RENARD Simon",
+      "dept": "GC2A",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 1,
+      "avis": "Abandon",
+      "redoublement": "",
+      "commentaire": ""
     }
   ],
   "annee": "2025-2026"
