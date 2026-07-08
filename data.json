@@ -78,7 +78,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "NGALAMOU Yinipi Jospen",
       "dept": "SE",
       "annee": "3A",
@@ -90,7 +90,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "ALLALOU Omar",
       "dept": "SE",
       "annee": "4A",
