@@ -1000,6 +1000,18 @@
       "avis": "Année blanche",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "MOUNIAMA Julien",
+      "dept": "PROD2A",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "Redoublement",
+      "redoublement": "",
+      "commentaire": "PROD (mais ça n'apparaît pas dans les choix...)"
     }
   ],
   "annee": "2025-2026"
