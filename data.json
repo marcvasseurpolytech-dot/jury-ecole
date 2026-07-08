@@ -126,7 +126,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "CHEIKHI Mohamed",
       "dept": "SE",
       "annee": "4A",
