@@ -259,18 +259,6 @@
     },
     {
       "traite": false,
-      "nom": "BOUALI Elie",
-      "dept": "SE",
-      "annee": "3A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 1,
-      "avis": "Epreuve complémentaire",
-      "redoublement": "",
-      "commentaire": ""
-    },
-    {
-      "traite": false,
       "nom": "JAFFLIN Simon",
       "dept": "SE",
       "annee": "3A",
