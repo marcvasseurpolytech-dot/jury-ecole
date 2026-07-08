@@ -916,6 +916,18 @@
       "avis": "",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "MORIZE Lisa",
+      "dept": "MAT",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "Redoublement",
+      "redoublement": "",
+      "commentaire": "va passer l'EC TOIEC bien qu'elle redouble"
     }
   ],
   "annee": "2025-2026"
