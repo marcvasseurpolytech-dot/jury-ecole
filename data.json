@@ -292,6 +292,18 @@
       "avis": "Redoublement",
       "redoublement": "",
       "commentaire": "S6 (et EC TOEIC)"
+    },
+    {
+      "traite": false,
+      "nom": "BEAULIEU Charli",
+      "dept": "SE",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "Année blanche",
+      "redoublement": "",
+      "commentaire": "part à paris Saclay"
     }
   ],
   "annee": "2025-2026"
