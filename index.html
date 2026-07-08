@@ -834,15 +834,19 @@ function renderStats() {
     const annees = [...new Set(es.map(e=>e.annee||'?'))].sort();
     const byType = {};
     es.forEach(e => {
-      const type = e.avis || '—';
-      if (!byType[type]) byType[type] = {};
-      const an = e.annee || '?';
-      if (!byType[type][an]) byType[type][an] = [];
-      byType[type][an].push(e.nom);
+      // N'ajouter dans byType que si avis renseigné
+      if (e.avis && e.avis.trim()) {
+        const type = e.avis;
+        if (!byType[type]) byType[type] = {};
+        const an = e.annee || '?';
+        if (!byType[type][an]) byType[type][an] = [];
+        byType[type][an].push(e.nom);
+      }
       // EC TOEIC en plus si barre non validée
       if (!e.ec_toeic) {
         const tType = 'EC TOEIC';
         if (!byType[tType]) byType[tType] = {};
+        const an = e.annee || '?';
         if (!byType[tType][an]) byType[tType][an] = [];
         byType[tType][an].push(e.nom);
       }
