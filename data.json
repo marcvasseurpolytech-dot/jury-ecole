@@ -448,6 +448,18 @@
       "avis": "Réorientation",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "DELAUNEY Hugo",
+      "dept": "GC",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 1,
+      "avis": "Réorientation",
+      "redoublement": "",
+      "commentaire": ""
     }
   ],
   "annee": "2025-2026"
