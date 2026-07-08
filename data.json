@@ -268,6 +268,18 @@
       "avis": "Epreuve complémentaire",
       "redoublement": "",
       "commentaire": ""
+    },
+    {
+      "traite": false,
+      "nom": "JAFFLIN Simon",
+      "dept": "SE",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 0,
+      "avis": "Redoublement",
+      "redoublement": "",
+      "commentaire": "S5 et S6"
     }
   ],
   "annee": "2025-2026"
