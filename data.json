@@ -376,6 +376,18 @@
       "avis": "Redoublement",
       "redoublement": "",
       "commentaire": "EC Toeic pour S5 et redoublement S6"
+    },
+    {
+      "traite": false,
+      "nom": "FORNET Simon",
+      "dept": "GBA",
+      "annee": "3A",
+      "ec_langue": "",
+      "ec_langue_val": 0,
+      "ec_toeic": 1,
+      "avis": "Réorientation",
+      "redoublement": "",
+      "commentaire": ""
     }
   ],
   "annee": "2025-2026"
