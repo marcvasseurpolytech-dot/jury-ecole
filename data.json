@@ -186,7 +186,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "PILLOT Anthony",
       "dept": "SE",
       "annee": "4A",
@@ -198,7 +198,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "ZHANG Xilong",
       "dept": "SE",
       "annee": "4A",
@@ -210,7 +210,7 @@
       "commentaire": ""
     },
     {
-      "traite": false,
+      "traite": true,
       "nom": "TRUC Muche",
       "dept": "2IA",
       "annee": "3A",
