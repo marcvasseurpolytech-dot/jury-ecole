@@ -270,7 +270,7 @@
       "commentaire": "S5 et S6 EIF"
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "NGOWET Louembet Hyacinte",
       "dept": "SE",
       "annee": "3A",
