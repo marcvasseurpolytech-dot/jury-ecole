@@ -456,6 +456,7 @@ const PROFS = ['Marc','Beate','Sara','Pablo','Jean-Yves','Rose','Messaoud','Mari
 const DEPTS = ['2IA','MAT','MECA','SE','SE2A','GC','GC2A','GBA','PROD2A','IS','IS2A','2GU2A','M1GC','M1GM','M2'];
 
 const AVIS_MAP = {
+  'EC TOEIC':           'badge-ec',
   'Redoublement':'badge-redoublement',
   'Réorientation':'badge-reorientation',
   'Epreuve complémentaire':'badge-ec',
@@ -781,6 +782,7 @@ function renderStats() {
 
   // ── Ordre des types de rattrapage ──
   const TYPE_ORDER = [
+    'EC TOEIC',
     'Epreuve complémentaire',
     'Redoublement',
     'Réorientation',
@@ -793,6 +795,7 @@ function renderStats() {
 
   // Couleurs de fond par type (pour les lignes du tableau)
   const TYPE_BG = {
+    'EC TOEIC':                    'rgba(201,162,39,.15)',
     'Epreuve complémentaire': 'rgba(224,120,32,.12)',
     'Redoublement':               'rgba(224,82,82,.12)',
     'Réorientation':          'rgba(155,89,182,.12)',
@@ -836,6 +839,13 @@ function renderStats() {
       const an = e.annee || '?';
       if (!byType[type][an]) byType[type][an] = [];
       byType[type][an].push(e.nom);
+      // EC TOEIC en plus si barre non validée
+      if (!e.ec_toeic) {
+        const tType = 'EC TOEIC';
+        if (!byType[tType]) byType[tType] = {};
+        if (!byType[tType][an]) byType[tType][an] = [];
+        byType[tType][an].push(e.nom);
+      }
     });
     const types = Object.keys(byType).sort((a,b) => {
       const ia = TYPE_ORDER.indexOf(a), ib = TYPE_ORDER.indexOf(b);
