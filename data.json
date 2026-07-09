@@ -114,7 +114,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "EL Ghoche Badria",
       "dept": "SE",
       "annee": "4A",
