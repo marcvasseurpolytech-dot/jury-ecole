@@ -138,7 +138,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "NAIT-SEGHIR Naël",
       "dept": "SE",
       "annee": "4A",
