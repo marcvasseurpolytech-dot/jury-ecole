@@ -210,18 +210,6 @@
       "commentaire": ""
     },
     {
-      "traite": true,
-      "nom": "TRUC Muche",
-      "dept": "2IA",
-      "annee": "3A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 0,
-      "avis": "Redoublement",
-      "redoublement": "s5",
-      "commentaire": "à enlever"
-    },
-    {
       "traite": false,
       "nom": "PETROWSKI",
       "dept": "SE",
