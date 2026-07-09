@@ -150,7 +150,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "ZHANG Xilong",
       "dept": "SE",
       "annee": "4A",
