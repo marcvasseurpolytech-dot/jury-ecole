@@ -78,7 +78,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "BARON Clément",
       "dept": "SE",
       "annee": "4A",
@@ -90,7 +90,7 @@
       "commentaire": ""
     },
     {
-      "traite": true,
+      "traite": false,
       "nom": "BART-SALADIN Hugo",
       "dept": "SE",
       "annee": "4A",
