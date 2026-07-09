@@ -66,18 +66,6 @@
   ],
   "etudiants": [
     {
-      "traite": false,
-      "nom": "NGOWET Louembet Hyacinthe",
-      "dept": "SE",
-      "annee": "3A",
-      "ec_langue": "",
-      "ec_langue_val": 0,
-      "ec_toeic": 0,
-      "avis": "",
-      "redoublement": "",
-      "commentaire": "à enlever: infos entrées avant le jury"
-    },
-    {
       "traite": true,
       "nom": "",
       "dept": "SE",
